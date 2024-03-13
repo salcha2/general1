@@ -14,9 +14,7 @@ class AdminUser extends Model
         'name',
         'avatar',
         'remember_token',
-        'SURNAME',
-        'EMAIL',
-        'LAST_CONNECTION_DATE',
+        
     ];
 
     protected $hidden = [

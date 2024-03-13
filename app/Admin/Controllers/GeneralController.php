@@ -11,6 +11,8 @@ use App\Models\DeviceType;
 use App\Models\Entity;
 use App\Models\AdminUser;
 use App\Models\Status;
+use App\Models\GeneralView;
+
 
 class GeneralController extends AdminController
 {
@@ -28,24 +30,27 @@ class GeneralController extends AdminController
      */
     protected function grid()
     {
-        $grid = new Grid(new General());
+        $grid = new Grid(new GeneralView());
 
         $grid->column('ID', __('ID'));
-        $grid->column('device.DEVICE_TYPE', __('Device Type'));
+         // Consulta para cargar la relación 'device'
+        // Consulta para cargar la relación 'device' y obtener el DEVICE_TYPE
+        $grid->column('device_type', __('Device Type'));
+
         $grid->column('NAME', __('Name'));
         $grid->column('SERIAL_NUMBER', __('Serial Number'));
         $grid->column('RECEPTION_DATE', __('Reception Date'));
-        $grid->column('originEntity.ENTITY', __('Origin'));
-        $grid->column('recipientAdminUser.username', __('Recipient'));
-        $grid->column('state.STATE', __('State'));
+        $grid->column('entity', __('Origin'));
+        $grid->column('reciver', __('Recipient'));
+        $grid->column('state', __('State'));
         $grid->column('LOCATION', __('Location'));
-        $grid->column('ownerEntity.ENTITY', __('Owner'));
+        $grid->column('company', __('Owner'));
         $grid->column('QUANTITY', __('Quantity'));
         $grid->column('NOTES', __('Notes'));
         $grid->column('INSERTION_DATE', __('Insertion Date'));
-        $grid->column('insertedByAdminUser.username', __('Inserted By'));
+        $grid->column('inserted_B', __('Inserted By'));
         $grid->column('MODIFICATION_DATE', __('Modification Date'));
-        $grid->column('modifiedByAdminUser.username', __('Modified By'));
+        $grid->column('modified_B', __('Modified By'));
         $grid->column('VISIBLE', __('Visible'));
 
         return $grid;
@@ -57,34 +62,13 @@ class GeneralController extends AdminController
      * @param mixed $id
      * @return Show
      */
-    protected function detail($id)
-    {
-        $show = new Show(General::findOrFail($id));
 
-        $show->field('ID', __('ID'));
-        $show->field('device.DEVICE_TYPE', __('Device Type'));
-        $show->field('NAME', __('Name'));
-        $show->field('SERIAL_NUMBER', __('Serial Number'));
-        $show->field('RECEPTION_DATE', __('Reception Date'));
-        $show->field('originEntity.ENTITY', __('Origin'));
-        $show->field('recipientAdminUser.username', __('Recipient'));
-        $show->field('state.STATE', __('State'));
-        $show->field('LOCATION', __('Location'));
-        $show->field('ownerEntity.ENTITY', __('Owner'));
-        $show->field('QUANTITY', __('Quantity'));
-        $show->field('NOTES', __('Notes'));
-        $show->field('INSERTION_DATE', __('Insertion Date'));
-        $show->field('insertedByAdminUser.username', __('Inserted By'));
-        $show->field('MODIFICATION_DATE', __('Modification Date'));
-        $show->field('modifiedByAdminUser.username', __('Modified By'));
-        $show->field('VISIBLE', __('Visible'));
-
-        return $show;
-    }
+     
+    
 
     /**
      * Make a form builder.
-     *
+     * @param mixed $id
      * @return Form
      */
 
@@ -116,6 +100,32 @@ class GeneralController extends AdminController
          return $form;
      }
      
+
+      /**
+     * Make a show builder.
+     *
+     * @param mixed $id
+     * @return Show
+     */
+    protected function detail($id)
+{
+    $detail = GeneralView::findOrFail($id);
+    return view('vendor.admin.show.general_detail', compact('detail'));
+
+}
+
+
+
+//public function edit($id)
+//{
+   // Encuentra el registro que se va a editar
+ //  $general = General::findOrFail($id);
+
+   // Retorna la vista de edición junto con los datos del registro
+   //return view('vendor.admin.edit', compact('general'));
+//}
+
+
 
 
 

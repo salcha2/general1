@@ -13,4 +13,8 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('generals', GeneralController::class);
+    $router->get('generals/{id}', 'GeneralController@detail')->name('generals.detail');
+
+
+
 });

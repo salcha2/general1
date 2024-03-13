@@ -17,4 +17,9 @@ class DeviceType extends Model
     ];
 
     public $timestamps = false;
+
+
 }
+
+
+

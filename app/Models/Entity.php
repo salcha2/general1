@@ -14,4 +14,5 @@ class Entity extends Model
     ];
 
     public $timestamps = false;
+
 }
