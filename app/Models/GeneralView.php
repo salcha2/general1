@@ -30,7 +30,7 @@ class GeneralView extends Model
      * @var array
      */
     protected $fillable = [
-        'ID', 'device_type', 'entity', 'company', 'state', 'reciver', 'inserted_B', 'modified_B'
+        'ID', 'device_type', 'entity', 'company', 'state', 'reciver', 'inserted_B', 'modified_B', 'VERSION'
         // Agrega aquí otros campos que sean asignables por lotes (mass assignable)
     ];
 

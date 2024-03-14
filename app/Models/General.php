@@ -27,6 +27,7 @@ class General extends Model
         'INSERTED_BY',
         'MODIFICATION_DATE',
         'MODIFIED_BY',
+        'VERSION',
         'VISIBLE',
     ];
 

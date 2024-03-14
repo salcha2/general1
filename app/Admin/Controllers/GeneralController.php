@@ -55,6 +55,7 @@ class GeneralController extends AdminController
         $grid->column('inserted_B', __('Inserted By'));
         $grid->column('MODIFICATION_DATE', __('Modification Date'));
         $grid->column('modified_B', __('Modified By'));
+        $grid->column('VERSION', __('Version'));
         $grid->column('VISIBLE', __('Visible'));
 
         return $grid;
@@ -98,7 +99,8 @@ class GeneralController extends AdminController
      
          $form->date('MODIFICATION_DATE', __('Modification Date'));
          $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));         
-     
+         $form->text('VERSION', __('Version'));
+
          $form->switch('VISIBLE', __('Visible'));
       
          return $form;
