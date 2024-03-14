@@ -2,6 +2,8 @@
 
 namespace App\Admin\Controllers;
 
+use OpenAdmin\Admin\Layout\Content;
+
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
@@ -12,6 +14,8 @@ use App\Models\Entity;
 use App\Models\AdminUser;
 use App\Models\Status;
 use App\Models\GeneralView;
+
+use Illuminate\Http\Request; // Asegúrate de importar Illuminate\Http\Request
 
 
 class GeneralController extends AdminController
@@ -75,30 +79,32 @@ class GeneralController extends AdminController
      protected function form()
      {
          $form = new Form(new General());
-     
-         $form->number('ID', __('ID'));
+      
+         $form->number('ID', __('ID'))->readonly(); // Hacer que el campo de ID sea de solo lectura
          $form->select('DEVICE_ID', __('Device Type'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
          $form->text('NAME', __('Name'));
          $form->text('SERIAL_NUMBER', __('Serial Number'));
-         $form->date('RECEPTION_DATE', __('Reception Date'))->default(date('Y-m-d'));
+         $form->date('RECEPTION_DATE', __('Reception Date'));
          $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
          $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'));         
          $form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
-
+      
          $form->text('LOCATION', __('Location'));
          $form->select('OWNER', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
          $form->number('QUANTITY', __('Quantity'));
          $form->text('NOTES', __('Notes'));
-         $form->date('INSERTION_DATE', __('Insertion Date'))->default(date('Y-m-d'));
+         $form->date('INSERTION_DATE', __('Insertion Date'));
          $form->select('INSERTED_BY', __('INSERTED BY'))->options(AdminUser::pluck('NAME', 'id'));         
-
-         $form->date('MODIFICATION_DATE', __('Modification Date'))->default(date('Y-m-d'));
-         $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));         
-
-         $form->switch('VISIBLE', __('Visible'));
      
+         $form->date('MODIFICATION_DATE', __('Modification Date'));
+         $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));         
+     
+         $form->switch('VISIBLE', __('Visible'));
+      
          return $form;
      }
+     
+     
      
 
       /**
@@ -114,16 +120,18 @@ class GeneralController extends AdminController
 
 }
 
+// public function update($id)
+// {
+//     // Encuentra el registro a actualizar
+//     $general = General::findOrFail($id);
 
+//     // Actualiza los campos con los datos del formulario
+//     $general->update(request()->all());
 
-//public function edit($id)
-//{
-   // Encuentra el registro que se va a editar
- //  $general = General::findOrFail($id);
+//     // Redirecciona a la vista de edición con el ID del registro actualizado
+//     return redirect()->route('vendor.admin.edit', ['id' => $general->id]);
+// }
 
-   // Retorna la vista de edición junto con los datos del registro
-   //return view('vendor.admin.edit', compact('general'));
-//}
 
 
 

@@ -8,6 +8,9 @@ class General extends Model
 {
     protected $table = 'General';
 
+    protected $primaryKey = 'ID';
+
+
     protected $fillable = [
         'DEVICE_ID',
         'NAME',
