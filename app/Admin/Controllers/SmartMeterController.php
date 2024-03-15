@@ -6,7 +6,9 @@ use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
-use \App\Models\SmartMeter;
+use App\Models\SmartMeter;
+use App\Models\General;
+use App\Models\DeviceType;
 
 class SmartMeterController extends AdminController
 {
@@ -27,9 +29,13 @@ class SmartMeterController extends AdminController
         $grid = new Grid(new SmartMeter());
 
         $grid->column('ID', __('ID'));
-        $grid->column('GENERAL_ID', __('GENERAL ID'));
+        $grid->column('GENERAL_ID', __('GENERAL ID'))->display(function ($generalId) {
+            return $generalId;
+        });
         $grid->column('ACA', __('ACA'));
-        $grid->column('DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'));
+        $grid->column('FAMILY_SM', __('DEVICE FAMILY ID'))->display(function ($familySm) {
+            return $familySm;
+        });
         $grid->column('KW_CE', __('KW CE'));
         $grid->column('KR_CE', __('KR CE'));
         $grid->column('COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));
@@ -54,7 +60,7 @@ class SmartMeterController extends AdminController
         $show->field('ID', __('ID'));
         $show->field('GENERAL_ID', __('GENERAL ID'));
         $show->field('ACA', __('ACA'));
-        $show->field('DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'));
+        $show->field('FAMILY_SM', __('DEVICE FAMILY ID'));
         $show->field('KW_CE', __('KW CE'));
         $show->field('KR_CE', __('KR CE'));
         $show->field('COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));
@@ -75,9 +81,9 @@ class SmartMeterController extends AdminController
     {
         $form = new Form(new SmartMeter());
 
-        $form->number('GENERAL_ID', __('GENERAL ID'));
+        $form->number('GENERAL_ID', __('GENERAL ID'))->options(General::pluck('ID', 'id'));
         $form->text('ACA', __('ACA'));
-        $form->number('DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'));
+        $form->select('FAMILY_SM', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'));
         $form->text('KW_CE', __('KW CE'));
         $form->text('KR_CE', __('KR CE'));
         $form->text('COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));

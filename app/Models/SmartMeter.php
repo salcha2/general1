@@ -21,6 +21,7 @@ class SmartMeter extends Model
         'COMMUNICATION_AUTH_RF_KEY',
         'COMMISSIONING_AUTH_RF_KEY',
         'RF_MASTER_KEY',
+        
     ];
 
     public $timestamps = false;
@@ -32,6 +33,6 @@ class SmartMeter extends Model
 
     public function deviceFamily()
     {
-        return $this->belongsTo(DeviceFamily::class, 'DEVICE_FAMILY_ID');
+        return $this->belongsTo(DeviceType::class, 'DEVICE_FAMILY_ID');
     }
 }

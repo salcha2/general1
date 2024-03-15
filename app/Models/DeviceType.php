@@ -14,6 +14,8 @@ class DeviceType extends Model
         'APPLICATION_PROTOCOL',
         'PHYSICAL_PROTOCOL',
         'RADIO_INTERFACE',
+        'FAMILY_SM',
+        'FAMILY_LVC',
     ];
 
     public $timestamps = false;
