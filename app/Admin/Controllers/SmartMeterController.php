@@ -29,6 +29,8 @@ class SmartMeterController extends AdminController
         $grid = new Grid(new SmartMeter());
 
         $grid->column('ID', __('ID'));
+        $grid->column('general.NAME', __('General Name')); // Accede al atributo 'name' de la tabla 'General'
+
         $grid->column('GENERAL_ID', __('GENERAL ID'))->display(function ($generalId) {
             return $generalId;
         });
@@ -36,6 +38,7 @@ class SmartMeterController extends AdminController
         $grid->column('FAMILY_SM', __('DEVICE FAMILY ID'))->display(function ($familySm) {
             return $familySm;
         });
+
         $grid->column('KW_CE', __('KW CE'));
         $grid->column('KR_CE', __('KR CE'));
         $grid->column('COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));

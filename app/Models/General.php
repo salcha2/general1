@@ -39,6 +39,10 @@ class General extends Model
         return $this->belongsTo(DeviceType::class, 'DEVICE_ID');
     }
 
+
+   
+
+
     public function originEntity()
     {
         return $this->belongsTo(Entity::class, 'ORIGIN');

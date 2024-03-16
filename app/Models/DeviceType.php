@@ -19,7 +19,10 @@ class DeviceType extends Model
     ];
 
     public $timestamps = false;
-
+    public function generals()
+    {
+        return $this->hasMany(General::class, 'DEVICE_ID');
+    }
 
 }
 
