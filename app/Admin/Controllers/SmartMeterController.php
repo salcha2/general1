@@ -46,6 +46,11 @@ class SmartMeterController extends AdminController
         $grid->column('COMMUNICATION_AUTH_RF_KEY', __('COMMUNICATION AUTH RF KEY'));
         $grid->column('COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'));
         $grid->column('RF_MASTER_KEY', __('RF MASTER KEY'));
+        $grid->column('SERIAL_NUMBER', __('SERIAL NUMBER'));
+        $grid->column('TYPOLOGY_ID', __('TYPOLOGY'));
+
+
+
 
         return $grid;
     }
@@ -94,6 +99,10 @@ class SmartMeterController extends AdminController
         $form->text('COMMUNICATION_AUTH_RF_KEY', __('COMMUNICATION AUTH RF KEY'));
         $form->text('COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'));
         $form->text('RF_MASTER_KEY', __('RF MASTER KEY'));
+        $form->text('SERIAL_NUMBER', __('SERIAL NUMBER'));
+        $form->number('TYPOLOGY_ID', __('TYPOLOGY ID'))->options(General::pluck('ID', 'id'));
+
+
 
         return $form;
     }

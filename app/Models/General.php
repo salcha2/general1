@@ -29,6 +29,7 @@ class General extends Model
         'MODIFIED_BY',
         'VERSION',
         'VISIBLE',
+        'TYPOLOGY_ID'
     ];
 
     // Indica a Eloquent que las columnas created_at y updated_at existen
@@ -37,6 +38,11 @@ class General extends Model
     public function device()
     {
         return $this->belongsTo(DeviceType::class, 'DEVICE_ID');
+    }
+
+    public function deviceType()
+    {
+        return $this->belongsTo(DeviceType::class, 'TYPOLOGY_ID');
     }
 
 

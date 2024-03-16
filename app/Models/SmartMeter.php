@@ -21,6 +21,8 @@ class SmartMeter extends Model
         'COMMUNICATION_AUTH_RF_KEY',
         'COMMISSIONING_AUTH_RF_KEY',
         'RF_MASTER_KEY',
+        'SERIAL_NUMBER',
+        'TYPOLOGY_ID',
         
     ];
 
@@ -34,5 +36,10 @@ class SmartMeter extends Model
     public function deviceFamily()
     {
         return $this->belongsTo(DeviceType::class, 'DEVICE_FAMILY_ID');
+    }
+
+    public function deviceTypology()
+    {
+        return $this->belongsTo(DeviceType::class, 'TYPOLOGY_ID');
     }
 }

@@ -89,8 +89,37 @@ class GeneralController extends AdminController
         }
     });
 
+    $grid->column('TYPOLOGY_ID', __('TYPOLOGY'))->display(function ($deviceId) {
+        // Busca el dispositivo en la tabla DeviceType usando el ID
+        $deviceType = DeviceType::find($deviceId);
+    
+        // Verifica si se encontró un dispositivo con el ID dado
+        if ($deviceType) {
+            // Si se encontró, devuelve el DEVICE_TYPE
+            return $deviceType->TYPOLOGY;
+        } else {
+            // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
+            return 'No Device Type';
+        }
+    });
 
-    $grid->column('device.TYPOLOGY', __('TYPOLOGY'));
+
+    $grid->column('STATE_ID', __('STATE'))->display(function ($stateId) {
+        // Busca el estado en la tabla Status usando el STATE_ID
+        $status = Status::find($stateId);
+        
+        // Verifica si se encontró un estado con el STATE_ID dado
+        if ($status) {
+            // Si se encontró, devuelve el estado
+            return $status->STATE;
+        } else {
+            // Si no se encontró, devuelve un mensaje indicando que no se encontró el estado
+            return 'No State Found';
+        }
+    });
+    
+
+
 
     
 
@@ -98,8 +127,11 @@ class GeneralController extends AdminController
 
     // Resto de las columnas...
 
-    $grid->column('recipientAdminUser.username', __('RECEIVER'));
-    $grid->column('ownerEntity.COMPANY', __('COMPANY'));
+    $grid->column('recipientAdminUser.name', __('RECEIVER'));
+    $grid->column('insertedByAdminUser.name', __('INSERTED BY'));
+    $grid->column('modifiedByAdminUser.name', __('MODIFIED BY'));
+
+
 
     $grid->column('NAME', __('Name'));
     $grid->column('SERIAL_NUMBER', __('Serial Number'));
@@ -139,12 +171,13 @@ class GeneralController extends AdminController
         $form->date('INSERTION_DATE', __('Insertion Date'));
         $form->select('INSERTED_BY', __('INSERTED BY'))->options(AdminUser::pluck('NAME', 'id'));         
         $form->date('MODIFICATION_DATE', __('Modification Date'));
-        $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));         
+        $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));
+        $form->select('TYPOLOGY_ID', __('TYPOLOGY'))->options(DeviceType::pluck('TYPOLOGY', 'ID'));
+         
         $form->text('VERSION', __('Version'));
-        $form->select('DEVICE_ID', __('TYPOLOGY'))->options(DeviceType::pluck('TYPOLOGY', 'ID'));
 
         $form->switch('VISIBLE', __('Visible'));
-      
+        
         return $form;
     }
 

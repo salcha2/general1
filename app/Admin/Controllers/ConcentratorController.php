@@ -38,6 +38,9 @@ class ConcentratorController extends AdminController
         $grid->column('MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
         $grid->column('ETH_LEFT', __('ETH LEFT'));
         $grid->column('MAC_ETH_LEFT', __('MAC ETH LEFT'));
+        $grid->column('SERIAL_NUMBER', __('SERIAL NUMBER'));
+        $grid->column('TYPOLOGY_ID', __('TYPOLOGY'));
+
 
         return $grid;
     }
@@ -88,6 +91,8 @@ class ConcentratorController extends AdminController
         $form->text('MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
         $form->text('ETH_LEFT', __('ETH LEFT'));
         $form->text('MAC_ETH_LEFT', __('MAC ETH LEFT'));
+        $form->text('SERIAL_NUMBER', __('SERIAL NUMBER'));
+        $form->number('TYPOLOGY_ID', __('TYPOLOGY ID'))->options(General::pluck('ID', 'id'));
 
         return $form;
     }
