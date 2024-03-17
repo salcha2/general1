@@ -144,6 +144,54 @@ class GeneralController extends AdminController
     $grid->column('VERSION', __('Version'));
     $grid->column('VISIBLE', __('Visible'));
 
+    $grid->filter(function ($filter) {
+        $filter->disableIdFilter(); // Deshabilita el filtro para el campo de ID
+        // Filtrar por nombre
+        $filter->like('NAME', __('Name'))->placeholder(__('Search Name'));
+        // Filtrar por número de serie
+        $filter->like('SERIAL_NUMBER', __('Serial Number'))->placeholder(__('Search Serial Number'));
+        // Filtrar por fecha de recepción
+        // Filtrar por origen
+        $filter->equal('ORIGIN', __('Origin'))->select(function () {
+            return Entity::pluck('COMPANY', 'ID')->prepend(__('Select Origin'), '');
+        });
+        // Filtrar por receptor
+        $filter->equal('RECIPIENT', __('Recipient'))->select(function () {
+            return AdminUser::pluck('name', 'id')->prepend(__('Select Recipient'), '');
+        });
+        // Filtrar por estado
+        $filter->equal('STATE_ID', __('State'))->select(function () {
+            return Status::pluck('STATE', 'ID')->prepend(__('Select State'), '');
+        });
+        // Filtrar por ubicación
+        $filter->like('LOCATION', __('Location'))->placeholder(__('Search Location'));
+        // Filtrar por propietario
+        $filter->equal('OWNER', __('Owner'))->select(function () {
+            return Entity::pluck('ENTITY', 'ID')->prepend(__('Select Owner'), '');
+        });
+        // Filtrar por notas
+        $filter->like('NOTES', __('Notes'))->placeholder(__('Search Notes'));
+        // Filtrar por fecha de inserción
+        // Filtrar por usuario que insertó
+        $filter->equal('INSERTED_BY', __('Inserted By'))->select(function () {
+            return AdminUser::pluck('name', 'id')->prepend(__('Select Inserted By'), '');
+        });
+        // Filtrar por fecha de modificación
+        // Filtrar por usuario que modificó
+        $filter->equal('MODIFIED_BY', __('Modified By'))->select(function () {
+            return AdminUser::pluck('name', 'id')->prepend(__('Select Modified By'), '');
+        });
+        
+        
+        
+        // Filtrar por versión
+        $filter->like('VERSION', __('Version'))->placeholder(__('Search Version'));
+        // Filtrar por visibilidad
+        // Agrega más filtros según sea necesario
+    });
+    
+    
+
     return $grid;
 }
 

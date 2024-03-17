@@ -78,4 +78,6 @@ class General extends Model
     {
         return $this->belongsTo(AdminUser::class, 'MODIFIED_BY');
     }
+
+    
 }
