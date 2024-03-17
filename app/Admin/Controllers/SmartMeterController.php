@@ -35,9 +35,61 @@ class SmartMeterController extends AdminController
             return $generalId;
         });
         $grid->column('ACA', __('ACA'));
-        $grid->column('FAMILY_SM', __('DEVICE FAMILY ID'))->display(function ($familySm) {
-            return $familySm;
+        $grid->column('general.VERSION', __('VERSION')); 
+        $grid->column('general.OWNER', __('OWNER')); 
+        $grid->column('general.STATE_ID', __('STATE')); 
+
+        $grid->column('general.RECEPTION_DATE', __('RECEPTION_DATE')); 
+        $grid->column('general.RECIPIENT', __('RECEIVER')); 
+        //$grid->column('general.DEVICE_ID', __('DEVICE ID')); 
+
+
+        $grid->column('general.DEVICE_ID', __('APPLICATION_PROTOCOL'))->display(function ($deviceId) {
+            // Busca el dispositivo en la tabla DeviceType usando el ID
+            $deviceType = DeviceType::find($deviceId);
+        
+            // Verifica si se encontró un dispositivo con el ID dado
+            if ($deviceType) {
+                // Si se encontró, devuelve el DEVICE_TYPE
+                return $deviceType->APPLICATION_PROTOCOL;
+            } else {
+                // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
+                return 'No Device Type';
+            }
         });
+
+        $grid->column('TYPOLOGY_ID', __('PHYSICAL_PROTOCOL'))->display(function ($deviceId) {
+            // Busca el dispositivo en la tabla DeviceType usando el ID
+            $deviceType = DeviceType::find($deviceId);
+        
+            // Verifica si se encontró un dispositivo con el ID dado
+            if ($deviceType) {
+                // Si se encontró, devuelve el DEVICE_TYPE
+                return $deviceType->PHYSICAL_PROTOCOL;
+            } else {
+                // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
+                return 'No Device Type';
+            }
+        });
+        
+
+        $grid->column('DEVICE_FAMILY_ID', __('DECICE FAMILY'))->display(function ($deviceId) {
+            // Busca el dispositivo en la tabla DeviceType usando el ID
+            $deviceType = DeviceType::find($deviceId);
+        
+            // Verifica si se encontró un dispositivo con el ID dado
+            if ($deviceType) {
+                // Si se encontró, devuelve el DEVICE_TYPE
+                return $deviceType->FAMILY_SM;
+            } else {
+                // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
+                return 'No Device Type';
+            }
+        });
+
+
+        
+
 
         $grid->column('KW_CE', __('KW CE'));
         $grid->column('KR_CE', __('KR CE'));
@@ -47,7 +99,6 @@ class SmartMeterController extends AdminController
         $grid->column('COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'));
         $grid->column('RF_MASTER_KEY', __('RF MASTER KEY'));
         $grid->column('SERIAL_NUMBER', __('SERIAL NUMBER'));
-        $grid->column('TYPOLOGY_ID', __('TYPOLOGY'));
 
 
 
@@ -68,7 +119,7 @@ class SmartMeterController extends AdminController
         $show->field('ID', __('ID'));
         $show->field('GENERAL_ID', __('GENERAL ID'));
         $show->field('ACA', __('ACA'));
-        $show->field('DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'));
+        $show->field('DEVICE_FADMILY_ID', __('DEVICE FAMILY ID'));
         $show->field('KW_CE', __('KW CE'));
         $show->field('KR_CE', __('KR CE'));
         $show->field('COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));
