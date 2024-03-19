@@ -226,11 +226,8 @@ $grid->column('url')->display(function ($url) {
             '9' => 'Other',
             '10' => 'Wire',
             '36' => 'QED',
-        ])->when(['5', '6'], function (Form $form) {
-            $form->text('name', 'Name')->rules('required');
-            $form->text('idcard', 'ID card')->rules('required');
-        })->when('6', function (Form $form) {
-            $form->text('passport', 'Passport')->rules('required');
+        ])->when('6', function (Form $form) {
+           
         })->when('1', function (Form $form) {
             $form->text('profile.ACA')->help('Enter ACA value here');
             $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
@@ -242,8 +239,22 @@ $grid->column('url')->display(function ($url) {
             $form->text('profile.COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'))->help('Enter commissioning AUTH RF key here');
             $form->text('profile.RF_MASTER_KEY', __('RF MASTER KEY'))->help('Enter RF master key here');
             $form->html('<link rel="stylesheet" href="'.asset('css/style.css').'">');
+        })->when('5', function (Form $form) {
+        $form->text('smart.ACA', __('ACA'));
+        $form->select('smart.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
+        $form->text('smart.PPP_USERNAME', __('PPP USERNAME'));
+        $form->text('smart.PPP_PWD', __('PPP PWD'));
+        $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME'));
+        $form->text('smart.LVC_MAA_PWD', __('LVC MAA PWD'));
+        $form->text('smart.ETH_RIGHT', __('ETH RIGHT'));
+        $form->text('smart.MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
+        $form->text('smart.ETH_LEFT', __('ETH LEFT'));
+        $form->text('smart.MAC_ETH_LEFT', __('MAC ETH LEFT'));
+
+            
         });
         
+
         
 
         $form->text('NAME', __('Name'));

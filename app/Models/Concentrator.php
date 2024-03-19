@@ -22,8 +22,7 @@ class Concentrator extends Model
         'MAC_ETH_RIGHT',
         'ETH_LEFT',
         'MAC_ETH_LEFT',
-        'SERIAL_NUMBER',
-        'TYPOLOGY_ID',
+        
     ];
 
     public $timestamps = false;
@@ -41,5 +40,10 @@ class Concentrator extends Model
     public function deviceCTypology()
     {
         return $this->belongsTo(DeviceType::class, 'TYPOLOGY_ID');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(General::class);
     }
 }

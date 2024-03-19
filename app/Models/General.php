@@ -86,5 +86,9 @@ class General extends Model
         return $this->hasOne(SmartMeter::class);
     }
 
+    public function smart()
+    {
+        return $this->hasOne(Concentrator::class);
+    }
     
 }
