@@ -29,7 +29,8 @@ class General extends Model
         'MODIFIED_BY',
         'VERSION',
         'VISIBLE',
-        'TYPOLOGY_ID'
+        'TYPOLOGY_ID',
+        'url' 
     ];
 
     // Indica a Eloquent que las columnas created_at y updated_at existen
@@ -77,6 +78,12 @@ class General extends Model
     public function modifiedByAdminUser()
     {
         return $this->belongsTo(AdminUser::class, 'MODIFIED_BY');
+    }
+
+
+    public function profile()
+    {
+        return $this->hasOne(SmartMeter::class);
     }
 
     

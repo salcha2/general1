@@ -14,6 +14,7 @@ use App\Models\Entity;
 use App\Models\AdminUser;
 use App\Models\Status;
 use App\Models\GeneralView;
+use App\Models\SmartMeter;
 
 use Illuminate\Http\Request; // Asegúrate de importar Illuminate\Http\Request
 
@@ -142,6 +143,10 @@ class GeneralController extends AdminController
     $grid->column('INSERTION_DATE', __('Insertion Date'));
     $grid->column('MODIFICATION_DATE', __('Modification Date'));
     $grid->column('VERSION', __('Version'));
+$grid->column('url')->display(function ($url) {
+    return "<a href=\"$url\" target=\"_blank\">$url</a>";
+});
+
     $grid->column('VISIBLE', __('Visible'));
 
     $grid->filter(function ($filter) {
@@ -153,7 +158,12 @@ class GeneralController extends AdminController
         // Filtrar por fecha de recepción
         // Filtrar por origen
         $filter->equal('ORIGIN', __('Origin'))->select(function () {
-            return Entity::pluck('COMPANY', 'ID')->prepend(__('Select Origin'), '');
+            // Obtener las entidades y filtrar las que no tienen valores numéricos en el campo COMPANY
+            $entities = Entity::get()->filter(function ($entity) {
+                return !is_numeric($entity->COMPANY);
+            })->pluck('COMPANY', 'ID')->prepend(__('Select Origin'), '');
+            
+            return $entities;
         });
         // Filtrar por receptor
         $filter->equal('RECIPIENT', __('Recipient'))->select(function () {
@@ -206,10 +216,22 @@ class GeneralController extends AdminController
       
         $form->number('ID', __('ID'))->readonly(); // Hacer que el campo de ID sea de solo lectura
         $form->select('DEVICE_ID', __('Device Type'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
+    
+
         $form->text('NAME', __('Name'));
         $form->text('SERIAL_NUMBER', __('Serial Number'));
         $form->date('RECEPTION_DATE', __('Reception Date'));
         $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
+        $form->text('profile.ACA');
+        $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'));
+         $form->text('profile.KW_CE', __('KW CE'));
+         $form->text('profile.KR_CE', __('KR CE'));
+         $form->text('profile.COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));
+         $form->text('profile.COMMISSIONING_ENC_RF_KEY', __('COMMISSIONING ENC RF KEY'));
+         $form->text('profile.COMMUNICATION_AUTH_RF_KEY', __('COMMUNICATION AUTH RF KEY'));
+         $form->text('profile.COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'));
+         $form->text('profile.RF_MASTER_KEY', __('RF MASTER KEY'));
+
         $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'));         
         $form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
         $form->text('LOCATION', __('Location'));
@@ -221,7 +243,7 @@ class GeneralController extends AdminController
         $form->date('MODIFICATION_DATE', __('Modification Date'));
         $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));
         $form->select('TYPOLOGY_ID', __('TYPOLOGY'))->options(DeviceType::pluck('TYPOLOGY', 'ID'));
-         
+        $form->text('url', __('URL'));
         $form->text('VERSION', __('Version'));
 
         $form->switch('VISIBLE', __('Visible'));
@@ -255,4 +277,27 @@ class GeneralController extends AdminController
 
         return $show;
     }
+
+
+
+    /**
+     * Método para cargar dinámicamente el segundo formulario
+     * basado en la selección del primer formulario.
+     *
+     * @param Form $form
+     * @return \Illuminate\Http\JsonResponse
+     */
+   public function loadSecondForm(Form $form)
+   {
+       // Obtén el valor seleccionado del primer formulario
+       $selectedDeviceId = request('DEVICE_ID');
+
+       // Lógica para cargar dinámicamente el segundo formulario
+       $secondForm = $form->select('SECOND_DEVICE_ID', __('Second Device Type'))
+           ->options(DeviceType::pluck('DEVICE_TYPE', 'ID'))
+           ->where('DEVICE_ID', $selectedDeviceId)
+           ->response();
+
+       return response()->json($secondForm);
+   }
 }
