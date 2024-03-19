@@ -18,7 +18,6 @@ use App\Models\SmartMeter;
 
 use Illuminate\Http\Request; // Asegúrate de importar Illuminate\Http\Request
 
-
 class GeneralController extends AdminController
 {
     /**
@@ -215,22 +214,81 @@ $grid->column('url')->display(function ($url) {
         $form = new Form(new General());
       
         $form->number('ID', __('ID'))->readonly(); // Hacer que el campo de ID sea de solo lectura
-        $form->select('DEVICE_ID', __('Device Type'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
-    
+        //$form->select('DEVICE_ID', __('Device Type'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
+        $form->select('DEVICE_ID', __('Device Type'))->options([
+            '1' => 'Meter',
+            '3' => 'Field Tool',
+            '4' => 'RF Antenna',
+            '5' => 'LVC',
+            '6' => 'Probe',
+            '7' => 'Router',
+            '8' => 'Module',
+            '9' => 'Other',
+            '10' => 'Wire',
+            '36' => 'QED',
+        ])->when(['5', '6'], function (Form $form) {
+            $form->text('name', 'Name')->rules('required');
+            $form->text('idcard', 'ID card')->rules('required');
+        })->when('6', function (Form $form) {
+            $form->text('passport', 'Passport')->rules('required');
+        })->when('1', function (Form $form) {
+            $form->text('profile.ACA')->help('Enter ACA value here');
+            $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
+            $form->text('profile.KW_CE', __('KW CE'))->help('Enter KW CE value here');
+            $form->text('profile.KR_CE', __('KR CE'))->help('Enter KR CE value here');
+            $form->text('profile.COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'))->help('Enter communication ENC RF key here');
+            $form->text('profile.COMMISSIONING_ENC_RF_KEY', __('COMMISSIONING ENC RF KEY'))->help('Enter commissioning ENC RF key here');
+            $form->text('profile.COMMUNICATION_AUTH_RF_KEY', __('COMMUNICATION AUTH RF KEY'))->help('Enter communication AUTH RF key here');
+            $form->text('profile.COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'))->help('Enter commissioning AUTH RF key here');
+            $form->text('profile.RF_MASTER_KEY', __('RF MASTER KEY'))->help('Enter RF master key here');
+            $form->html('<link rel="stylesheet" href="'.asset('css/style.css').'">');
+        });
+        
+        
 
         $form->text('NAME', __('Name'));
         $form->text('SERIAL_NUMBER', __('Serial Number'));
         $form->date('RECEPTION_DATE', __('Reception Date'));
         $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
-        $form->text('profile.ACA');
-        $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'));
-         $form->text('profile.KW_CE', __('KW CE'));
-         $form->text('profile.KR_CE', __('KR CE'));
-         $form->text('profile.COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'));
-         $form->text('profile.COMMISSIONING_ENC_RF_KEY', __('COMMISSIONING ENC RF KEY'));
-         $form->text('profile.COMMUNICATION_AUTH_RF_KEY', __('COMMUNICATION AUTH RF KEY'));
-         $form->text('profile.COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'));
-         $form->text('profile.RF_MASTER_KEY', __('RF MASTER KEY'));
+        // Sección de perfil
+    // $form->fieldset('Profile', function ($form) {
+    //     $form->text('profile.ACA')->help('Enter ACA value here');
+    //     $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
+    //     $form->text('profile.KW_CE', __('KW CE'))->help('Enter KW CE value here');
+    //     $form->text('profile.KR_CE', __('KR CE'))->help('Enter KR CE value here');
+    //     $form->text('profile.COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'))->help('Enter communication ENC RF key here');
+    //     $form->text('profile.COMMISSIONING_ENC_RF_KEY', __('COMMISSIONING ENC RF KEY'))->help('Enter commissioning ENC RF key here');
+    //     $form->text('profile.COMMUNICATION_AUTH_RF_KEY', __('COMMUNICATION AUTH RF KEY'))->help('Enter communication AUTH RF key here');
+    //     $form->text('profile.COMMISSIONING_AUTH_RF_KEY', __('COMMISSIONING AUTH RF KEY'))->help('Enter commissioning AUTH RF key here');
+    //     $form->text('profile.RF_MASTER_KEY', __('RF MASTER KEY'))->help('Enter RF master key here');
+    //     $form->html('<link rel="stylesheet" href="'.asset('css/style.css').'">');
+
+    // });
+    
+
+
+    // JavaScript para manejar la visibilidad de la sección de perfil
+$script = <<<SCRIPT
+<script>
+$(document).ready(function() {
+    $('#DEVICE_ID').change(function() {
+        var selectedDevice = $(this).val();
+        if (selectedDevice === 'Meter') {
+            $('.profile-section').show(); // Mostrar la sección de perfil si se selecciona 'Meter'
+        } else {
+            $('.profile-section').hide(); // Ocultar la sección de perfil si no se selecciona 'Meter'
+        }
+    });
+
+    // Disparar el evento change al cargar la página para asegurarnos de que la sección de perfil se muestre u oculte correctamente
+    $('#DEVICE_ID').trigger('change');
+});
+</script>
+SCRIPT;
+
+
+// Agregar el script al formulario
+$form->html($script);
 
         $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'));         
         $form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
