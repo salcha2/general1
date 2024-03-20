@@ -83,12 +83,14 @@ class General extends Model
 
     public function profile()
     {
-        return $this->hasOne(SmartMeter::class);
+        return $this->hasOne(SmartMeter::class, 'GENERAL_ID');
     }
 
     public function smart()
     {
-        return $this->hasOne(Concentrator::class);
+        return $this->hasOne(Concentrator::class, 'GENERAL_ID');
     }
+
+
     
 }

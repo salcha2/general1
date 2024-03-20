@@ -27,6 +27,19 @@ class Concentrator extends Model
 
     public $timestamps = false;
 
+
+    public static function boot()
+    {
+        parent::boot();
+
+        // Agregar un evento "creating" para verificar el valor de DEVICE_FAMILY_ID antes de la inserción
+        static::creating(function ($model) {
+            if (is_null($model->DEVICE_FAMILY_ID)) {
+                return false; // Cancelar la inserción si DEVICE_FAMILY_ID es nulo
+            }
+        });
+    }
+
     public function general()
     {
         return $this->belongsTo(General::class, 'GENERAL_ID');

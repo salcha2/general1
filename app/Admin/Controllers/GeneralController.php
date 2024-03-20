@@ -15,6 +15,8 @@ use App\Models\AdminUser;
 use App\Models\Status;
 use App\Models\GeneralView;
 use App\Models\SmartMeter;
+use App\Models\Concentrator;
+
 
 use Illuminate\Http\Request; // Asegúrate de importar Illuminate\Http\Request
 
@@ -226,9 +228,8 @@ $grid->column('url')->display(function ($url) {
             '9' => 'Other',
             '10' => 'Wire',
             '36' => 'QED',
-        ])->when('6', function (Form $form) {
-           
-        })->when('1', function (Form $form) {
+        ])->when('1', function (Form $form) {
+            // Define los campos específicos del medidor (Meter)
             $form->text('profile.ACA')->help('Enter ACA value here');
             $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
             $form->text('profile.KW_CE', __('KW CE'))->help('Enter KW CE value here');
@@ -240,19 +241,29 @@ $grid->column('url')->display(function ($url) {
             $form->text('profile.RF_MASTER_KEY', __('RF MASTER KEY'))->help('Enter RF master key here');
             $form->html('<link rel="stylesheet" href="'.asset('css/style.css').'">');
         })->when('5', function (Form $form) {
-        $form->text('smart.ACA', __('ACA'));
-        $form->select('smart.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
-        $form->text('smart.PPP_USERNAME', __('PPP USERNAME'));
-        $form->text('smart.PPP_PWD', __('PPP PWD'));
-        $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME'));
-        $form->text('smart.LVC_MAA_PWD', __('LVC MAA PWD'));
-        $form->text('smart.ETH_RIGHT', __('ETH RIGHT'));
-        $form->text('smart.MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
-        $form->text('smart.ETH_LEFT', __('ETH LEFT'));
-        $form->text('smart.MAC_ETH_LEFT', __('MAC ETH LEFT'));
-
-            
+            // Define los campos específicos del tipo LVC
+            $form->text('smart.ACA', __('ACA'));
+            $form->select('smart.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
+            $form->text('smart.PPP_USERNAME', __('PPP USERNAME'));
+            $form->text('smart.PPP_PWD', __('PPP PWD'));
+            $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME'));
+            $form->text('smart.LVC_MAA_PWD', __('LVC MAA PWD'));
+            $form->text('smart.ETH_RIGHT', __('ETH RIGHT'));
+            $form->text('smart.MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
+            $form->text('smart.ETH_LEFT', __('ETH LEFT'));
+            $form->text('smart.MAC_ETH_LEFT', __('MAC ETH LEFT'));
         });
+        
+        
+        
+
+       
+        
+        
+        
+        
+        
+        
         
 
         
@@ -277,29 +288,6 @@ $grid->column('url')->display(function ($url) {
     // });
     
 
-
-    // JavaScript para manejar la visibilidad de la sección de perfil
-$script = <<<SCRIPT
-<script>
-$(document).ready(function() {
-    $('#DEVICE_ID').change(function() {
-        var selectedDevice = $(this).val();
-        if (selectedDevice === 'Meter') {
-            $('.profile-section').show(); // Mostrar la sección de perfil si se selecciona 'Meter'
-        } else {
-            $('.profile-section').hide(); // Ocultar la sección de perfil si no se selecciona 'Meter'
-        }
-    });
-
-    // Disparar el evento change al cargar la página para asegurarnos de que la sección de perfil se muestre u oculte correctamente
-    $('#DEVICE_ID').trigger('change');
-});
-</script>
-SCRIPT;
-
-
-// Agregar el script al formulario
-$form->html($script);
 
         $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'));         
         $form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
