@@ -18,6 +18,10 @@ use App\Models\SmartMeter;
 use App\Models\Concentrator;
 
 
+use Illuminate\Support\Facades\Auth;
+
+
+
 use Illuminate\Http\Request; // Asegúrate de importar Illuminate\Http\Request
 
 class GeneralController extends AdminController
@@ -91,19 +95,7 @@ class GeneralController extends AdminController
         }
     });
 
-    $grid->column('TYPOLOGY_ID', __('TYPOLOGY'))->display(function ($deviceId) {
-        // Busca el dispositivo en la tabla DeviceType usando el ID
-        $deviceType = DeviceType::find($deviceId);
     
-        // Verifica si se encontró un dispositivo con el ID dado
-        if ($deviceType) {
-            // Si se encontró, devuelve el DEVICE_TYPE
-            return $deviceType->TYPOLOGY;
-        } else {
-            // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
-            return 'No Device Type';
-        }
-    });
 
 
     $grid->column('STATE_ID', __('STATE'))->display(function ($stateId) {
@@ -201,7 +193,7 @@ $grid->column('url')->display(function ($url) {
         // Agrega más filtros según sea necesario
     });
     
-    
+       
 
     return $grid;
 }
@@ -296,10 +288,18 @@ $grid->column('url')->display(function ($url) {
         $form->number('QUANTITY', __('Quantity'));
         $form->text('NOTES', __('Notes'));
         $form->date('INSERTION_DATE', __('Insertion Date'));
-        $form->select('INSERTED_BY', __('INSERTED BY'))->options(AdminUser::pluck('NAME', 'id'));         
+               
         $form->date('MODIFICATION_DATE', __('Modification Date'));
-        $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'));
-        $form->select('TYPOLOGY_ID', __('TYPOLOGY'))->options(DeviceType::pluck('TYPOLOGY', 'ID'));
+        $user = Auth::user();
+
+        // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
+        if ($user) {
+            $form->hidden('MODIFIED_BY', __('MODIFIED BY'))->default($user->id);
+        }
+            
+        if ($user) {
+            $form->hidden('INSERTED_BY', __('INSERTED BY'))->default($user->id);
+        } 
         $form->text('url', __('URL'));
         $form->text('VERSION', __('Version'));
 
@@ -357,4 +357,8 @@ $grid->column('url')->display(function ($url) {
 
        return response()->json($secondForm);
    }
+
+
+
+ 
 }

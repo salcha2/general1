@@ -29,7 +29,6 @@ class General extends Model
         'MODIFIED_BY',
         'VERSION',
         'VISIBLE',
-        'TYPOLOGY_ID',
         'url' 
     ];
 
@@ -41,10 +40,7 @@ class General extends Model
         return $this->belongsTo(DeviceType::class, 'DEVICE_ID');
     }
 
-    public function deviceType()
-    {
-        return $this->belongsTo(DeviceType::class, 'TYPOLOGY_ID');
-    }
+  
 
 
    

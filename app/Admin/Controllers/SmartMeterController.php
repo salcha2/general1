@@ -73,6 +73,9 @@ class SmartMeterController extends AdminController
             }
         });
 
+       //$grid->model()->where('ID', 1);
+
+
         $grid->column('general.RECEPTION_DATE', __('RECEPTION_DATE')); 
         //$grid->column('general.RECIPIENT', __('RECEIVER')); 
         //$grid->column('general.DEVICE_ID', __('DEVICE ID')); 
@@ -201,8 +204,10 @@ class SmartMeterController extends AdminController
             // Filtrar por visibilidad
             // Agrega más filtros según sea necesario
         });
-
-
+        $grid->model()->whereHas('general', function ($query) {
+            $query->where('STATE_ID', 1)->where('DEVICE_ID', 1);
+        });
+    
 
 
         return $grid;

@@ -190,6 +190,10 @@ class ConcentratorController extends AdminController
             // Agrega más filtros según sea necesario
         });
 
+        $grid->model()->whereHas('general', function ($query) {
+            $query->where('STATE_ID', 1);
+        }); 
+
         return $grid;
     }
 
