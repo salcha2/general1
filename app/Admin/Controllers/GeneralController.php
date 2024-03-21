@@ -146,29 +146,28 @@ $grid->column('url', __('Sharepoint url'))->display(function ($url) {
     return "<a href=\"$url\" target=\"_blank\">$url</a>";
 });
 
-    //$grid->column('VISIBLE', __('Visible'));
-
-    $grid->filter(function ($filter) {
-        $filter->disableIdFilter(); // Deshabilita el filtro para el campo de ID
-        
-        // Filtrar por nombre y número de serie
-        $filter->scope('new', 'Recently modified')
-    ->whereDate('created_at', date('Y-m-d'))
-    ->orWhere('updated_at', date('Y-m-d'));
-        
-    $filter->column(1/2, function ($filter) {
-        $filter->like('NAME', 'Name');
-        $filter->group('STATE_ID', function ($group) {
-            
-            $group->equal('equal to');
-        });
 
 
+
+
+
+
+
+    
+$grid->filter(function($filter) {
+    $filter->where(function ($query) {
+        $query->whereHas('device', function ($query) {
+            $query->where('DEVICE_TYPE', 'like', "%{$this->input}%");
+        })->orWhere('SERIAL_NUMBER', 'like', "%{$this->input}%")
+          ->orWhere('NAME', 'like', "%{$this->input}%")
+          ->orWhere('LOCATION', 'like', "%{$this->input}%");
+    }, 'Search by Device Type or General Attributes');
+});
+
+
         
-    });
-        
-        
-    });
+//$grid->expandFilter();
+
     
        
 
