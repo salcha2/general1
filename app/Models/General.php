@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class General extends Model
 {
+
+    use SoftDeletes;
+
     protected $table = 'General';
 
     protected $primaryKey = 'ID';
@@ -34,6 +39,10 @@ class General extends Model
 
     // Indica a Eloquent que las columnas created_at y updated_at existen
     public $timestamps = true;
+
+
+    protected $dates = ['DELETED_AT'];
+
 
     public function device()
     {
@@ -85,6 +94,19 @@ class General extends Model
     public function smart()
     {
         return $this->hasOne(Concentrator::class, 'GENERAL_ID');
+    }
+
+    //  public function stado()
+    //  {
+    //      return $this->hasOne(Status::class, 'ID');
+    //  }
+
+    
+
+
+    public function generales()
+    {
+        return $this->belongsTo(General::class, 'DEVICE_TYPE_ID');
     }
 
 

@@ -45,6 +45,12 @@ class Concentrator extends Model
         return $this->belongsTo(General::class, 'GENERAL_ID');
     }
 
+    public function generales()
+    {
+        return $this->belongsTo(General::class, 'ID');
+    }
+
+
     public function deviceFamily()
     {
         return $this->belongsTo(DeviceType::class, 'DEVICE_FAMILY_ID');

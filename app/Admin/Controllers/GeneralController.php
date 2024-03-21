@@ -47,7 +47,7 @@ class GeneralController extends AdminController
     // Consulta para cargar la relación 'device' y obtener el DEVICE_TYPE
 
 
-    $grid->column('DEVICE_ID', __('DECICE TYPE'))->display(function ($deviceId) {
+    $grid->column('DEVICE_ID', __('Device Type'))->display(function ($deviceId) {
         // Busca el dispositivo en la tabla DeviceType usando el ID
         $deviceType = DeviceType::find($deviceId);
     
@@ -98,7 +98,7 @@ class GeneralController extends AdminController
     
 
 
-    $grid->column('STATE_ID', __('STATE'))->display(function ($stateId) {
+    $grid->column('STATE_ID', __('State'))->display(function ($stateId) {
         // Busca el estado en la tabla Status usando el STATE_ID
         $status = Status::find($stateId);
         
@@ -121,76 +121,53 @@ class GeneralController extends AdminController
 
     // Resto de las columnas...
 
-    $grid->column('recipientAdminUser.name', __('RECEIVER'));
-    $grid->column('insertedByAdminUser.name', __('INSERTED BY'));
-    $grid->column('modifiedByAdminUser.name', __('MODIFIED BY'));
+    $grid->column('recipientAdminUser.name', __('Receiver'));
+    $grid->column('insertedByAdminUser.name', __('Inserted by'));
+    $grid->column('modifiedByAdminUser.name', __('Modified by'));
 
 
 
     $grid->column('NAME', __('Name'));
-    $grid->column('SERIAL_NUMBER', __('Serial Number'));
-    $grid->column('RECEPTION_DATE', __('Reception Date'));
+    $grid->column('SERIAL_NUMBER', __('Serial number'));
+    $grid->column('RECEPTION_DATE', __('Reception date'));
     $grid->column('LOCATION', __('Location'));
-    $grid->column('QUANTITY', __('Quantity'));
+    //$grid->column('QUANTITY', __('Quantity'));
     $grid->column('NOTES', __('Notes'));
-    $grid->column('INSERTION_DATE', __('Insertion Date'));
-    $grid->column('MODIFICATION_DATE', __('Modification Date'));
+    $grid->column('created_at', __('Insertion date'))->display(function ($createdAt) {
+        return (new \DateTime($createdAt))->format('Y-m-d H:i:s');
+    });
+    $grid->column('updated_at', __('Modification date'))->display(function ($updated_at) {
+        return (new \DateTime($updated_at))->format('Y-m-d H:i:s');
+    });
+    
+    //$grid->column('updated_at', __('Modification Date'));
     $grid->column('VERSION', __('Version'));
-$grid->column('url')->display(function ($url) {
+$grid->column('url', __('Sharepoint url'))->display(function ($url) {
     return "<a href=\"$url\" target=\"_blank\">$url</a>";
 });
 
-    $grid->column('VISIBLE', __('Visible'));
+    //$grid->column('VISIBLE', __('Visible'));
 
     $grid->filter(function ($filter) {
         $filter->disableIdFilter(); // Deshabilita el filtro para el campo de ID
-        // Filtrar por nombre
-        $filter->like('NAME', __('Name'))->placeholder(__('Search Name'));
-        // Filtrar por número de serie
-        $filter->like('SERIAL_NUMBER', __('Serial Number'))->placeholder(__('Search Serial Number'));
-        // Filtrar por fecha de recepción
-        // Filtrar por origen
-        $filter->equal('ORIGIN', __('Origin'))->select(function () {
-            // Obtener las entidades y filtrar las que no tienen valores numéricos en el campo COMPANY
-            $entities = Entity::get()->filter(function ($entity) {
-                return !is_numeric($entity->COMPANY);
-            })->pluck('COMPANY', 'ID')->prepend(__('Select Origin'), '');
+        
+        // Filtrar por nombre y número de serie
+        $filter->scope('new', 'Recently modified')
+    ->whereDate('created_at', date('Y-m-d'))
+    ->orWhere('updated_at', date('Y-m-d'));
+        
+    $filter->column(1/2, function ($filter) {
+        $filter->like('NAME', 'Name');
+        $filter->group('STATE_ID', function ($group) {
             
-            return $entities;
+            $group->equal('equal to');
         });
-        // Filtrar por receptor
-        $filter->equal('RECIPIENT', __('Recipient'))->select(function () {
-            return AdminUser::pluck('name', 'id')->prepend(__('Select Recipient'), '');
-        });
-        // Filtrar por estado
-        $filter->equal('STATE_ID', __('State'))->select(function () {
-            return Status::pluck('STATE', 'ID')->prepend(__('Select State'), '');
-        });
-        // Filtrar por ubicación
-        $filter->like('LOCATION', __('Location'))->placeholder(__('Search Location'));
-        // Filtrar por propietario
-        $filter->equal('OWNER', __('Owner'))->select(function () {
-            return Entity::pluck('ENTITY', 'ID')->prepend(__('Select Owner'), '');
-        });
-        // Filtrar por notas
-        $filter->like('NOTES', __('Notes'))->placeholder(__('Search Notes'));
-        // Filtrar por fecha de inserción
-        // Filtrar por usuario que insertó
-        $filter->equal('INSERTED_BY', __('Inserted By'))->select(function () {
-            return AdminUser::pluck('name', 'id')->prepend(__('Select Inserted By'), '');
-        });
-        // Filtrar por fecha de modificación
-        // Filtrar por usuario que modificó
-        $filter->equal('MODIFIED_BY', __('Modified By'))->select(function () {
-            return AdminUser::pluck('name', 'id')->prepend(__('Select Modified By'), '');
-        });
+
+
+        
+    });
         
         
-        
-        // Filtrar por versión
-        $filter->like('VERSION', __('Version'))->placeholder(__('Search Version'));
-        // Filtrar por visibilidad
-        // Agrega más filtros según sea necesario
     });
     
        
@@ -209,7 +186,7 @@ $grid->column('url')->display(function ($url) {
       
         $form->number('ID', __('ID'))->readonly(); // Hacer que el campo de ID sea de solo lectura
         //$form->select('DEVICE_ID', __('Device Type'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
-        $form->select('DEVICE_ID', __('Device Type'))->options([
+        $form->select('DEVICE_ID', __('Device type'))->options([
             '1' => 'Meter',
             '3' => 'Field Tool',
             '4' => 'RF Antenna',
@@ -222,8 +199,8 @@ $grid->column('url')->display(function ($url) {
             '36' => 'QED',
         ])->when('1', function (Form $form) {
             // Define los campos específicos del medidor (Meter)
-            $form->text('profile.ACA')->help('Enter ACA value here');
-            $form->select('profile.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
+            $form->text('profile.ACA', __('ADCE'))->help('Enter ADCE value here');
+            $form->select('profile.DEVICE_FAMILY_ID', __('Device family'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
             $form->text('profile.KW_CE', __('KW CE'))->help('Enter KW CE value here');
             $form->text('profile.KR_CE', __('KR CE'))->help('Enter KR CE value here');
             $form->text('profile.COMMUNICATION_ENC_RF_KEY', __('COMMUNICATION ENC RF KEY'))->help('Enter communication ENC RF key here');
@@ -235,9 +212,9 @@ $grid->column('url')->display(function ($url) {
         })->when('5', function (Form $form) {
             // Define los campos específicos del tipo LVC
             $form->text('smart.ACA', __('ACA'));
-            $form->select('smart.DEVICE_FAMILY_ID', __('DEVICE FAMILY ID'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
-            $form->text('smart.PPP_USERNAME', __('PPP USERNAME'));
-            $form->text('smart.PPP_PWD', __('PPP PWD'));
+            $form->select('smart.DEVICE_FAMILY_ID', __('Device family'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
+            $form->text('smart.PPP_USERNAME', __('PPP username'));
+            $form->text('smart.PPP_PWD', __('PPP pass'));
             $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME'));
             $form->text('smart.LVC_MAA_PWD', __('LVC MAA PWD'));
             $form->text('smart.ETH_RIGHT', __('ETH RIGHT'));
@@ -252,6 +229,12 @@ $grid->column('url')->display(function ($url) {
        
         
         
+//         $options = DeviceType::pluck('APPLICATION_PROTOCOL', 'ID')->unique();
+// $form->select(
+//     'generales.APPLICATION_PROTOCOL',
+//     __('APPLICATION PROTOCOL')
+// )->options($options);
+
         
         
         
@@ -261,9 +244,11 @@ $grid->column('url')->display(function ($url) {
         
 
         $form->text('NAME', __('Name'));
-        $form->text('SERIAL_NUMBER', __('Serial Number'));
-        $form->date('RECEPTION_DATE', __('Reception Date'));
+
+        $form->text('SERIAL_NUMBER', __('Serial number'));
+        $form->date('RECEPTION_DATE', __('Reception date'));
         $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
+
         // Sección de perfil
     // $form->fieldset('Profile', function ($form) {
     //     $form->text('profile.ACA')->help('Enter ACA value here');
@@ -285,11 +270,11 @@ $grid->column('url')->display(function ($url) {
         $form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
         $form->text('LOCATION', __('Location'));
         $form->select('OWNER', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
-        $form->number('QUANTITY', __('Quantity'));
+        //$form->number('QUANTITY', __('Quantity'));
         $form->text('NOTES', __('Notes'));
-        $form->date('INSERTION_DATE', __('Insertion Date'));
+        //$form->date('INSERTION_DATE', __('Insertion Date'));
                
-        $form->date('MODIFICATION_DATE', __('Modification Date'));
+        //$form->date('MODIFICATION_DATE', __('Modification Date'));
         $user = Auth::user();
 
         // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
@@ -300,10 +285,10 @@ $grid->column('url')->display(function ($url) {
         if ($user) {
             $form->hidden('INSERTED_BY', __('INSERTED BY'))->default($user->id);
         } 
-        $form->text('url', __('URL'));
+        $form->text('url', __('Sharepoint url'));
         $form->text('VERSION', __('Version'));
 
-        $form->switch('VISIBLE', __('Visible'));
+        //$form->switch('VISIBLE', __('Visible'));
         
         return $form;
     }
@@ -325,12 +310,48 @@ $grid->column('url')->display(function ($url) {
         $show->field('entity', __('Origin'));
         $show->field('LOCATION', __('Location'));
         $show->field('company', __('Owner'));
-        $show->field('QUANTITY', __('Quantity'));
+        //$show->field('QUANTITY', __('Quantity'));
         $show->field('NOTES', __('Notes'));
-        $show->field('INSERTION_DATE', __('Insertion Date'));
-        $show->field('MODIFICATION_DATE', __('Modification Date'));
+        $show->field('recipientAdminUser.name', __('Receiver'));
+        $show->field('insertedByAdminUser.name', __('Inserted by'));
+        $show->field('modifiedByAdminUser.name', __('Modified by'));
+
+
+        //$general = General::with('device')->find($deviceId);
+
+
+        // $show->field('DEVICE_ID', __('Device Type'))->display(function ($deviceId) {
+        //     // Busca el dispositivo en la tabla DeviceType usando el ID
+        //     $deviceType = DeviceType::find($deviceId);
+        
+        //     // Verifica si se encontró un dispositivo con el ID dado
+        //     if ($deviceType) {
+        //         $general = General::with('device')->find($deviceId);
+
+        //         // Si se encontró, devuelve el DEVICE_TYPE
+        //         return $general -> device ->DEVICE_TYPE;
+        //     } else {
+        //         // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
+        //         return 'No Device Type';
+        //     }
+        // });
+
+
+        //$show->field('stado.STATE', __('State'));
+        //$show->field('INSERTION_DATE', __('Insertion Date'));
+        //$show->field('MODIFICATION_DATE', __('Modification Date'));
         $show->field('VERSION', __('Version'));
-        $show->field('VISIBLE', __('Visible'));
+        //$show->field('VISIBLE', __('Visible'));
+
+        $show->field('created_at', __('Insertion date'))->display(function ($createdAt) {
+            return (new \DateTime($createdAt))->format('Y-m-d H:i:s');
+        });
+        $show->field('updated_at', __('Modification date'))->display(function ($updated_at) {
+            return (new \DateTime($updated_at))->format('Y-m-d H:i:s');
+        });
+
+        
+        
 
         return $show;
     }

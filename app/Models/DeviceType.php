@@ -24,6 +24,11 @@ class DeviceType extends Model
         return $this->hasMany(General::class, 'DEVICE_ID');
     }
 
+    public function smooth()
+    {
+        return $this->hasOne(DeviceType::class, 'DEVICE_TYPE_ID');
+    }
+
 }
 
 
