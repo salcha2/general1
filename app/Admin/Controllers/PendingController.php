@@ -12,6 +12,8 @@ use App\Models\General;
 
 use App\Models\Status;
 use OpenAdmin\Admin\Form;
+use Illuminate\Http\Request; // Importa la clase Request
+
 
 
 class PendingController extends AdminController
@@ -117,8 +119,6 @@ class PendingController extends AdminController
     $form->text('QUANTITY', __('Quantity'));
     $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
 
-    //$form->text('smart.NAME', __('NAME'));
-
     $form->select('STATE_ID', __('Status'))->options([
         '1' => 'Installed',
         '2' => 'Lent',
@@ -130,38 +130,61 @@ class PendingController extends AdminController
         '11' => 'Pending',
     ])->when('3', function (Form $form) {
         // Define los campos específicos del medidor (Meter)
-        $form->text('NAME', __('Name'));
-        $form->select('DEVICE_ID', __('Device id'))->options(DeviceType::pluck('ID', 'ID'));
 
-        //$form->text('smart.DEVICE_ID', __('DEVICE_ID'));
+        // Obtener el modelo General usando el ID
+        $request = request();
+        // Luego, obtén el ID de la URL
+        $id = $request->segment(3);
+        // Ahora puedes usar el $id para obtener la cantidad correspondiente
+        // Por ejemplo, recuperar el modelo General usando el ID
+        $general = General::findOrFail($id);
+        // Luego, obtén la cantidad del modelo General
+        $quantity = $general->QUANTITY ?? 1;
 
-        $form->text('SERIAL_NUMBER', __('Serial Number'));
-        $form->text('RECEPTION_DATE', __('Reception Date'));
-        $form->text('ORIGIN', __('Origin'));
-        $form->text('RECIPIENT', __('Recipient'));
-        $form->text('STATE_ID', __('State ID'));
-        $form->text('LOCATION', __('Location'));
-        $form->text('OWNER', __('Owner'));
-        $form->text('INSERTED_BY', __('Inserted By'));
-        $form->text('MODIFIED_BY', __('Modified By'));
-        $form->text('VERSION', __('Version'));
-        $form->text('VISIBLE', __('Visible'));
-        $form->text('url', __('URL'));
+        for ($i = 0; $i < $quantity; $i++) {
+            $form->fieldset('Basic info ' . ($i + 1), function ($form) {
+                $form->text('NAME', __('Name'));
+                $form->select('DEVICE_ID', __('Device id'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
+                $form->text('SERIAL_NUMBER', __('Serial Number'));
+                $form->text('RECEPTION_DATE', __('Reception Date'));
+                $form->text('ORIGIN', __('Origin'));
+                $form->text('RECIPIENT', __('Recipient'));
+                $form->text('STATE_ID', __('State ID'));
+                $form->text('LOCATION', __('Location'));
+                $form->text('OWNER', __('Owner'));
+                $form->text('INSERTED_BY', __('Inserted By'));
+                $form->text('MODIFIED_BY', __('Modified By'));
+                $form->text('VERSION', __('Version'));
+                $form->text('VISIBLE', __('Visible'));
+                $form->text('url', __('URL'));
 
 
-        $form->hidden('GENERAL_ID'); // Este campo es oculto en el formulario
+                
+            });
+        }
 
-
+        // Agregar lógica para guardar múltiples registros al enviar el formulario
+        $form->saving(function (Form $form) use ($quantity) {
+            // Guardar múltiples registros dependiendo de la cantidad especificada
+            for ($i = 0; $i < $quantity; $i++) {
+                // Clonar los datos del formulario para evitar sobrescribirlos en cada iteración
+                $formData = $form->model()->toArray();
         
+                // Eliminar el campo 'QUANTITY' para evitar que se guarde como parte de los datos del modelo
+                unset($formData['QUANTITY']);
         
+                // Crear una nueva instancia de General con los datos clonados del formulario
+                General::create($formData);
+            }
         
-
-
+            // Cancelar la operación de guardado predeterminada del formulario
+            return false;
+        });
+        
     });
-
-
-    //$form->text('smart.NAME', __('Name'));
 
     return $form;
 }
+
+
 }
