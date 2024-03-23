@@ -112,79 +112,94 @@ class PendingController extends AdminController
 
 
     protected function form()
-{
-    $form = new Form(new General());
-    $form->select('DEVICE_ID', __('DEVICE TYPE'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
-    $form->text('NOTES', __('Notes'));
-    $form->text('QUANTITY', __('Quantity'));
-    $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
-
-    $form->select('STATE_ID', __('Status'))->options([
-        '1' => 'Installed',
-        '2' => 'Lent',
-        '3' => 'Not Installed',
-        '4' => 'Unknown',
-        '8' => 'Panel 1 Borbolla',
-        '9' => 'Panel 1 Cartuja',
-        '10' => 'Panel 2 Cartuja',
-        '11' => 'Pending',
-    ])->when('3', function (Form $form) {
-        // Define los campos específicos del medidor (Meter)
-
-        // Obtener el modelo General usando el ID
-        $request = request();
-        // Luego, obtén el ID de la URL
-        $id = $request->segment(3);
-        // Ahora puedes usar el $id para obtener la cantidad correspondiente
-        // Por ejemplo, recuperar el modelo General usando el ID
-        $general = General::findOrFail($id);
-        // Luego, obtén la cantidad del modelo General
-        $quantity = $general->QUANTITY ?? 1;
-
-        for ($i = 0; $i < $quantity; $i++) {
-            $form->fieldset('Basic info ' . ($i + 1), function ($form) {
-                $form->text('NAME', __('Name'));
-                $form->select('DEVICE_ID', __('Device id'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
-                $form->text('SERIAL_NUMBER', __('Serial Number'));
-                $form->text('RECEPTION_DATE', __('Reception Date'));
-                $form->text('ORIGIN', __('Origin'));
-                $form->text('RECIPIENT', __('Recipient'));
-                $form->text('STATE_ID', __('State ID'));
-                $form->text('LOCATION', __('Location'));
-                $form->text('OWNER', __('Owner'));
-                $form->text('INSERTED_BY', __('Inserted By'));
-                $form->text('MODIFIED_BY', __('Modified By'));
-                $form->text('VERSION', __('Version'));
-                $form->text('VISIBLE', __('Visible'));
-                $form->text('url', __('URL'));
-
-
-                
-            });
-        }
-
-        // Agregar lógica para guardar múltiples registros al enviar el formulario
-        $form->saving(function (Form $form) use ($quantity) {
-            // Guardar múltiples registros dependiendo de la cantidad especificada
+    {
+        $form = new Form(new General());
+        $form->select('DEVICE_ID', __('DEVICE TYPE'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
+        $form->text('NOTES', __('Notes'));
+        $form->text('QUANTITY', __('Quantity'));
+        $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
+    
+        $form->select('STATE_ID', __('Status'))->options([
+            '1' => 'Installed',
+            '2' => 'Lent',
+            '3' => 'Not Installed',
+            '4' => 'Unknown',
+            '8' => 'Panel 1 Borbolla',
+            '9' => 'Panel 1 Cartuja',
+            '10' => 'Panel 2 Cartuja',
+            '11' => 'Pending',
+        ])->when('3', function (Form $form) {
+            // Obtener el modelo General usando el ID de la URL
+            $id = request()->segment(3);
+            $general = General::findOrFail($id);
+    
+            // Obtener la cantidad del modelo General
+            $quantity = $general->QUANTITY ?? 1;
+    
             for ($i = 0; $i < $quantity; $i++) {
-                // Clonar los datos del formulario para evitar sobrescribirlos en cada iteración
-                $formData = $form->model()->toArray();
-        
-                // Eliminar el campo 'QUANTITY' para evitar que se guarde como parte de los datos del modelo
-                unset($formData['QUANTITY']);
-        
-                // Crear una nueva instancia de General con los datos clonados del formulario
-                General::create($formData);
+                // Crear un subformulario para cada iteración
+                $form->fieldset('Basic info ' . ($i + 1), function ($form) {
+                    $form->text('NAME', __('Name'));
+                    $form->select('DEVICE_ID', __('Device id'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
+                    $form->text('SERIAL_NUMBER', __('Serial Number'));
+                    $form->text('RECEPTION_DATE', __('Reception Date'));
+                    $form->text('ORIGIN', __('Origin'));
+                    $form->text('RECIPIENT', __('Recipient'));
+                    $form->select('STATE_ID', __('State ID'))->options([
+                        '1' => 'Installed',
+                        '2' => 'Lent',
+                        '3' => 'Not Installed',
+                        '4' => 'Unknown',
+                        '8' => 'Panel 1 Borbolla',
+                        '9' => 'Panel 1 Cartuja',
+                        '10' => 'Panel 2 Cartuja',
+                        '11' => 'Pending',
+                    ]);
+                    $form->text('LOCATION', __('Location'));
+                    $form->text('OWNER', __('Owner'));
+                    $form->text('INSERTED_BY', __('Inserted By'));
+                    $form->text('MODIFIED_BY', __('Modified By'));
+                    $form->text('VERSION', __('Version'));
+                    $form->text('VISIBLE', __('Visible'));
+                    $form->text('url', __('URL'));
+                });
             }
-        
-            // Cancelar la operación de guardado predeterminada del formulario
-            return false;
+    
+            $form->saving(function (Form $form) use ($quantity) {
+                // Guardar múltiples registros dependiendo de la cantidad especificada
+                for ($i = 0; $i < $quantity; $i++) {
+                    // Crear una nueva instancia de General para cada iteración
+                    $general = new General();
+            
+                    // Asignar los datos específicos del formulario a la instancia de General
+                    $general->DEVICE_ID = $form->input('DEVICE_ID');
+                    $general->NAME = $form->input('NAME');
+                    $general->SERIAL_NUMBER = $form->input('SERIAL_NUMBER');
+                    $general->RECEPTION_DATE = $form->input('RECEPTION_DATE');
+                    $general->ORIGIN = $form->input('ORIGIN');
+                    $general->RECIPIENT = $form->input('RECIPIENT');
+                    $general->STATE_ID = $form->input('STATE_ID');
+                    $general->LOCATION = $form->input('LOCATION');
+                    $general->OWNER = $form->input('OWNER');
+                    $general->INSERTED_BY = $form->input('INSERTED_BY');
+                    $general->MODIFIED_BY = $form->input('MODIFIED_BY');
+                    $general->VERSION = $form->input('VERSION');
+                    $general->VISIBLE = $form->input('VISIBLE');
+                    $general->url = $form->input('url');
+            
+                    // Guardar la instancia de General
+                    $general->save();
+                }
+            
+                // Cancelar la operación de guardado predeterminada del formulario
+                return false;
+            });
+            
         });
-        
-    });
-
-    return $form;
-}
+    
+        return $form;
+    }
+    
 
 
 }
