@@ -16,6 +16,8 @@ Route::group([
     $router->resource('panelsm', SmartMeterController::class);
     Route::get('generals/{id}', [GeneralController::class, 'edit'])->name('vendor.admin.edit');
     $router->resource('panelLVC', ConcentratorController::class);
+    $router->resource('pending', PendingController::class);
+
 
 
 

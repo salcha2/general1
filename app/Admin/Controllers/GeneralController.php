@@ -160,15 +160,24 @@ $grid->filter(function($filter) {
             $query->where('DEVICE_TYPE', 'like', "%{$this->input}%");
         })->orWhere('SERIAL_NUMBER', 'like', "%{$this->input}%")
           ->orWhere('NAME', 'like', "%{$this->input}%")
-          ->orWhere('LOCATION', 'like', "%{$this->input}%");
-    }, 'Search by Device Type or General Attributes');
+          ->orWhere('LOCATION', 'like', "%{$this->input}%")
+          ->orWhere('VERSION', 'like', "%{$this->input}%");
+    }, 'Search ');
+
+
+
+    $filter->disableIdFilter();
+
+
 });
+
 
 
         
 //$grid->expandFilter();
 
     
+    $grid->model()->whereNotIn('STATE_ID', [11]);
        
 
     return $grid;
@@ -266,7 +275,20 @@ $grid->filter(function($filter) {
 
 
         $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'));         
-        $form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
+        //$form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
+        $form->select('STATE_ID', __('State'))->options([
+            '1' => 'Installed',
+            '2' => 'Lent',
+            '3' => 'Not Installed',
+            '4' => 'Unknown',
+            '8' => 'Panel 1 Borbolla',
+            '9' => 'Panel 1 Cartuja',
+            '10' => 'Panel 2 Cartuja',
+            '11' => 'Pending',
+            
+        ])->when('11', function (Form $form) {
+            $form->text('QUANTITY', __('Quantity'));
+        });
         $form->text('LOCATION', __('Location'));
         $form->select('OWNER', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
         //$form->number('QUANTITY', __('Quantity'));

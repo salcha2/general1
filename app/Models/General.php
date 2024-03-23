@@ -51,6 +51,8 @@ class General extends Model
 
   
 
+    
+
 
    
 
@@ -101,14 +103,19 @@ class General extends Model
     //      return $this->hasOne(Status::class, 'ID');
     //  }
 
-    
+    public function algo(){
+        return $this->belongsTo(General::class, 'GENERAL_ID');
 
+    }
 
     public function generales()
     {
         return $this->belongsTo(General::class, 'DEVICE_TYPE_ID');
     }
 
-
+    public function profite()
+    {
+        return $this->hasOne(Pending::class, 'GENERAL_ID');
+    }
     
 }
