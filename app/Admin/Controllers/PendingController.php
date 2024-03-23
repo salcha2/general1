@@ -138,14 +138,14 @@ class PendingController extends AdminController
     
             for ($i = 0; $i < $quantity; $i++) {
                 // Crear un subformulario para cada iteración
-                $form->fieldset('Basic info ' . ($i + 1), function ($form) {
-                    $form->text('NAME', __('Name'));
-                    $form->select('DEVICE_ID', __('Device id'))->options(DeviceType::pluck('DEVICE_TYPE', 'ID'));
-                    $form->text('SERIAL_NUMBER', __('Serial Number'));
-                    $form->text('RECEPTION_DATE', __('Reception Date'));
-                    $form->text('ORIGIN', __('Origin'));
-                    $form->text('RECIPIENT', __('Recipient'));
-                    $form->select('STATE_ID', __('State ID'))->options([
+                $form->fieldset('Basic info ' . ($i + 1), function ($form) use ($i) {
+                    $form->text('NAME['.$i.']', __('Name'));
+                    $form->text('DEVICE_ID['.$i.']', __('Device id'));
+                    $form->text('SERIAL_NUMBER['.$i.']', __('Serial Number'));
+                    $form->text('RECEPTION_DATE['.$i.']', __('Reception Date'));
+                    $form->text('ORIGIN['.$i.']', __('Origin'));
+                    $form->text('RECIPIENT['.$i.']', __('Recipient'));
+                    $form->select('STATE_ID['.$i.']', __('State ID'))->options([
                         '1' => 'Installed',
                         '2' => 'Lent',
                         '3' => 'Not Installed',
@@ -155,13 +155,13 @@ class PendingController extends AdminController
                         '10' => 'Panel 2 Cartuja',
                         '11' => 'Pending',
                     ]);
-                    $form->text('LOCATION', __('Location'));
-                    $form->text('OWNER', __('Owner'));
-                    $form->text('INSERTED_BY', __('Inserted By'));
-                    $form->text('MODIFIED_BY', __('Modified By'));
-                    $form->text('VERSION', __('Version'));
-                    $form->text('VISIBLE', __('Visible'));
-                    $form->text('url', __('URL'));
+                    $form->text('LOCATION['.$i.']', __('Location'));
+                    $form->text('OWNER['.$i.']', __('Owner'));
+                    $form->text('INSERTED_BY['.$i.']', __('Inserted By'));
+                    $form->text('MODIFIED_BY['.$i.']', __('Modified By'));
+                    $form->text('VERSION['.$i.']', __('Version'));
+                    $form->text('VISIBLE['.$i.']', __('Visible'));
+                    $form->text('url['.$i.']', __('URL'));
                 });
             }
     
@@ -172,29 +172,28 @@ class PendingController extends AdminController
                     $general = new General();
             
                     // Asignar los datos específicos del formulario a la instancia de General
-                    $general->DEVICE_ID = $form->input('DEVICE_ID');
-                    $general->NAME = $form->input('NAME');
-                    $general->SERIAL_NUMBER = $form->input('SERIAL_NUMBER');
-                    $general->RECEPTION_DATE = $form->input('RECEPTION_DATE');
-                    $general->ORIGIN = $form->input('ORIGIN');
-                    $general->RECIPIENT = $form->input('RECIPIENT');
-                    $general->STATE_ID = $form->input('STATE_ID');
-                    $general->LOCATION = $form->input('LOCATION');
-                    $general->OWNER = $form->input('OWNER');
-                    $general->INSERTED_BY = $form->input('INSERTED_BY');
-                    $general->MODIFIED_BY = $form->input('MODIFIED_BY');
-                    $general->VERSION = $form->input('VERSION');
-                    $general->VISIBLE = $form->input('VISIBLE');
-                    $general->url = $form->input('url');
+                    $general->DEVICE_ID = $form->input('DEVICE_ID.' . $i);
+                    $general->NAME = $form->input('NAME.' . $i);
+                    $general->SERIAL_NUMBER = $form->input('SERIAL_NUMBER.' . $i);
+                    $general->RECEPTION_DATE = $form->input('RECEPTION_DATE.' . $i);
+                    $general->ORIGIN = $form->input('ORIGIN.' . $i);
+                    $general->RECIPIENT = $form->input('RECIPIENT.' . $i);
+                    $general->STATE_ID = $form->input('STATE_ID.' . $i);
+                    $general->LOCATION = $form->input('LOCATION.' . $i);
+                    $general->OWNER = $form->input('OWNER.' . $i);
+                    $general->INSERTED_BY = $form->input('INSERTED_BY.' . $i);
+                    $general->MODIFIED_BY = $form->input('MODIFIED_BY.' . $i);
+                    $general->VERSION = $form->input('VERSION.' . $i);
+                    $general->VISIBLE = $form->input('VISIBLE.' . $i);
+                    $general->url = $form->input('url.' . $i);
             
                     // Guardar la instancia de General
                     $general->save();
                 }
-            
-                // Cancelar la operación de guardado predeterminada del formulario
-                return false;
             });
             
+    
+            return $form;
         });
     
         return $form;
