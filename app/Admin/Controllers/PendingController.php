@@ -9,11 +9,14 @@ use App\Models\Pending;
 use App\Models\DeviceType;
 use App\Models\Entity;
 use App\Models\General;
+use App\Models\AdminUser;
+
 
 use App\Models\Status;
 use OpenAdmin\Admin\Form;
 use Illuminate\Http\Request; // Importa la clase Request
 
+use Illuminate\Support\Facades\Auth;
 
 
 class PendingController extends AdminController
@@ -140,11 +143,32 @@ class PendingController extends AdminController
                 // Crear un subformulario para cada iteración
                 $form->fieldset('Basic info ' . ($i + 1), function ($form) use ($i) {
                     $form->text('NAME['.$i.']', __('Name'));
-                    $form->text('DEVICE_ID['.$i.']', __('Device id'));
+                    $form->select('DEVICE_ID['.$i.']', __('Device type'))->options([
+                        '1' => 'Meter',
+                        '3' => 'Field Tool',
+                        '4' => 'RF Antenna',
+                        '5' => 'LVC',
+                        '6' => 'Probe',
+                        '7' => 'Router',
+                        '8' => 'Module',
+                        '9' => 'Other',
+                        '10' => 'Wire',
+                        '36' => 'QED',
+                    ]);            
                     $form->text('SERIAL_NUMBER['.$i.']', __('Serial Number'));
-                    $form->text('RECEPTION_DATE['.$i.']', __('Reception Date'));
-                    $form->text('ORIGIN['.$i.']', __('Origin'));
-                    $form->text('RECIPIENT['.$i.']', __('Recipient'));
+                    $form->date('RECEPTION_DATE['.$i.']', __('Reception Date'));
+                    $form->select('ORIGIN['.$i.']', __('Origin'))->options([
+                        '1' =>	'Brazil (Latam)',
+                        '2' =>	'Chile (Latam)',
+                        '3' =>	'Delgaz (Romania)',
+                        '4' =>	'Endesa (Spain)',
+                        '5' =>	'GSP (Iberia)',
+                        '6'  =>	'GSP (Italy)',
+                        '7'  =>	'NA',
+                        '8'  =>	'Retele (Romania)',
+                        '9' =>	'Viesgo (Spain)',
+                    ]); 
+
                     $form->select('STATE_ID['.$i.']', __('State ID'))->options([
                         '1' => 'Installed',
                         '2' => 'Lent',
@@ -156,9 +180,24 @@ class PendingController extends AdminController
                         '11' => 'Pending',
                     ]);
                     $form->text('LOCATION['.$i.']', __('Location'));
-                    $form->text('OWNER['.$i.']', __('Owner'));
-                    $form->text('INSERTED_BY['.$i.']', __('Inserted By'));
-                    $form->text('MODIFIED_BY['.$i.']', __('Modified By'));
+                    $form->text('OWNER['.$i.']', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
+
+                    $user = Auth::user();
+
+        // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
+        if ($user) {
+            $form->hidden('MODIFIED_BY['.$i.']', __('MODIFIED BY'))->default($user->id);
+        }
+            
+        if ($user) {
+            $form->hidden('INSERTED_BY['.$i.']', __('INSERTED BY'))->default($user->id);
+        } 
+
+        if ($user) {
+            $form->text('RECIPIENT['.$i.']', __('RECEIVER'))->default($user->id);
+        } 
+                    //$form->text('INSERTED_BY['.$i.']', __('Inserted By'));
+                    //$form->text('MODIFIED_BY['.$i.']', __('Modified By'));
                     $form->text('VERSION['.$i.']', __('Version'));
                     $form->text('VISIBLE['.$i.']', __('Visible'));
                     $form->text('url['.$i.']', __('URL'));
