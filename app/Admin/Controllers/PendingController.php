@@ -180,7 +180,17 @@ class PendingController extends AdminController
                         '11' => 'Pending',
                     ]);
                     $form->text('LOCATION['.$i.']', __('Location'));
-                    $form->text('OWNER['.$i.']', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
+                    //$form->text('OWNER['.$i.']', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
+                    $form->select('OWNER['.$i.']', __('Owner'))->options([
+                        '1' => 'NA',
+                        '3' => 'GSP-MOS-DO-EU-TSOP',
+                        '4' => 'Endesa',
+                        '5' => 'GSP-MOS-DO-EU-TSOP',
+                        '6' => 'Italy',
+                        '8' => 'Retele',
+                     
+
+                    ]);
 
                     $user = Auth::user();
 
@@ -211,15 +221,15 @@ class PendingController extends AdminController
                     $general = new General();
             
                     // Asignar los datos específicos del formulario a la instancia de General
-                    $general->DEVICE_ID = $form->input('DEVICE_ID.' . $i);
+                    $general->DEVICE_ID = $form->input('DEVICE_ID.' . $i)[0]; // Obtener el primer elemento de la matriz
                     $general->NAME = $form->input('NAME.' . $i);
                     $general->SERIAL_NUMBER = $form->input('SERIAL_NUMBER.' . $i);
                     $general->RECEPTION_DATE = $form->input('RECEPTION_DATE.' . $i);
-                    $general->ORIGIN = $form->input('ORIGIN.' . $i);
+                    $general->ORIGIN = $form->input('ORIGIN.' . $i)[0]; // Obtener el primer elemento de la matriz
                     $general->RECIPIENT = $form->input('RECIPIENT.' . $i);
-                    $general->STATE_ID = $form->input('STATE_ID.' . $i);
+                    $general->STATE_ID = $form->input('STATE_ID.' . $i)[0]; // Obtener el primer elemento de la matriz
                     $general->LOCATION = $form->input('LOCATION.' . $i);
-                    $general->OWNER = $form->input('OWNER.' . $i);
+                    $general->OWNER = $form->input('OWNER.' . $i)[0]; // Obtener el primer elemento de la matriz
                     $general->INSERTED_BY = $form->input('INSERTED_BY.' . $i);
                     $general->MODIFIED_BY = $form->input('MODIFIED_BY.' . $i);
                     $general->VERSION = $form->input('VERSION.' . $i);
@@ -229,6 +239,13 @@ class PendingController extends AdminController
                     // Guardar la instancia de General
                     $general->save();
                 }
+
+
+
+                return redirect('/admin/pending');
+
+
+
             });
             
     
