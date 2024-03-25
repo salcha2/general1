@@ -74,7 +74,7 @@ class General extends Model
 
     public function ownerEntity()
     {
-        return $this->belongsTo(Entity::class, 'OWNER');
+        return $this->belongsTo(Company::class, 'OWNER');
     }
 
     public function insertedByAdminUser()

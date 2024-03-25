@@ -16,6 +16,7 @@ use App\Models\Status;
 use App\Models\GeneralView;
 use App\Models\SmartMeter;
 use App\Models\Concentrator;
+use App\Models\Company;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -71,24 +72,25 @@ class GeneralController extends AdminController
         
         // Verifica si se encontró una entidad con el ID dado
         if ($entity) {
-            // Si se encontró, devuelve el valor de COMPANY
-            return $entity->COMPANY;
+            // Si se encontró, devuelve el valor de ENTITY
+            return $entity->ENTITY;
         } else {
             // Si no se encontró, devuelve un mensaje indicando que no se pudo obtener la compañía
             return 'Unknown Company';
         }
     });
 
+ // Busca la entidad en la tabla Entity usando el ID de OWNER
 
 
     $grid->column('OWNER', __('Owner'))->display(function ($ownerId) {
-        // Busca la entidad en la tabla Entity usando el ID de OWNER
-        $entity = Entity::find($ownerId);
+        // Busca la entidad en la tabla Entity usando el ID de ORIGIN
+        $entity = Company::find($ownerId);
         
         // Verifica si se encontró una entidad con el ID dado
         if ($entity) {
-            // Si se encontró, devuelve el valor de ENTITY
-            return $entity->ENTITY;
+            // Si se encontró, devuelve el valor de COMPANY
+            return $entity->COMPANY;
         } else {
             // Si no se encontró, devuelve un mensaje indicando que no se pudo obtener la entidad
             return 'Unknown Entity';
@@ -230,8 +232,19 @@ $grid->filter(function($filter) {
             $form->text('smart.MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
             $form->text('smart.ETH_LEFT', __('ETH LEFT'));
             $form->text('smart.MAC_ETH_LEFT', __('MAC ETH LEFT'));
+        })->when('36', function (Form $form) {
+            // Define los campos específicos del tipo LVC
+            $form->text('smart.ACA', __('ACA'));
+            $form->select('smart.DEVICE_FAMILY_ID', __('Device family'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
+            $form->text('smart.PPP_USERNAME', __('PPP username'));
+            $form->text('smart.PPP_PWD', __('PPP pass'));
+            $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME'));
+            $form->text('smart.LVC_MAA_PWD', __('LVC MAA PWD'));
+            $form->text('smart.ETH_RIGHT', __('ETH RIGHT'));
+            $form->text('smart.MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
+            $form->text('smart.ETH_LEFT', __('ETH LEFT'));
+            $form->text('smart.MAC_ETH_LEFT', __('MAC ETH LEFT'));
         });
-        
         
         
 
@@ -291,7 +304,7 @@ $grid->filter(function($filter) {
             $form->text('QUANTITY', __('Quantity'));
         });
         $form->text('LOCATION', __('Location'));
-        $form->select('OWNER', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
+        $form->select('OWNER', __('Owner'))->options(Company::pluck('COMPANY', 'ID'));
         //$form->number('QUANTITY', __('Quantity'));
         $form->text('NOTES', __('Notes'));
         //$form->date('INSERTION_DATE', __('Insertion Date'));
@@ -300,13 +313,25 @@ $grid->filter(function($filter) {
         $user = Auth::user();
 
         // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
-        if ($user) {
-            $form->hidden('MODIFIED_BY', __('MODIFIED BY'))->default($user->id);
-        }
+
+        $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
+        $form->select('INSERTED_BY', __('INSERTED BY'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
+
+
+
+        // if ($user) {
+        //     $form->hidden('MODIFIED_BY', __('MODIFIED BY'))->default($user->id);
+        // }
             
-        if ($user) {
-            $form->hidden('INSERTED_BY', __('INSERTED BY'))->default($user->id);
-        } 
+        // if ($user) {
+        //     $form->hidden('INSERTED_BY', __('INSERTED BY'))->default($user->id);
+        // } 
+
+
+
+
+
+
         $form->text('url', __('Sharepoint url'));
         $form->text('VERSION', __('Version'));
 

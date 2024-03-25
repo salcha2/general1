@@ -11,6 +11,8 @@ use App\Models\General;
 use App\Models\DeviceType;
 use App\Models\Entity;
 use App\Models\Status;
+use App\Models\Company;
+
 use App\Models\AdminUser;
 
 
@@ -46,12 +48,12 @@ class SmartMeterController extends AdminController
 
         $grid->column('general.OWNER', __('OWNER'))->display(function ($stateId) {
             // Busca el estado en la tabla Status usando el STATE_ID
-            $status = Entity::find($stateId);
+            $status = Company::find($stateId);
             
             // Verifica si se encontró un estado con el STATE_ID dado
             if ($status) {
                 // Si se encontró, devuelve el estado
-                return $status->ENTITY;
+                return $status->COMPANY;
             } else {
                 // Si no se encontró, devuelve un mensaje indicando que no se encontró el estado
                 return 'No State Found';

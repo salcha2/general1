@@ -184,11 +184,10 @@ class PendingController extends AdminController
                     //$form->text('OWNER['.$i.']', __('Owner'))->options(Entity::pluck('COMPANY', 'ID'));
                     $form->select('OWNER['.$i.']', __('Owner'))->options([
                         '1' => 'NA',
-                        '3' => 'GSP-MOS-DO-EU-TSOP',
-                        '4' => 'Endesa',
-                        '5' => 'GSP-MOS-DO-EU-TSOP',
-                        '6' => 'Italy',
-                        '8' => 'Retele',
+                        '2' => 'GSP-MOS-DO-EU-TSOP',
+                        '3' => 'Endesa',
+                        '5' => 'Italy',
+                        '6' => 'Retele',
                      
 
                     ]);
@@ -196,9 +195,13 @@ class PendingController extends AdminController
                     $user = Auth::user();
 
         // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
-        if ($user) {
-            $form->hidden('MODIFIED_BY['.$i.']', __('MODIFIED BY'))->default($user->id);
+         if ($user) {
+             $form->hidden('MODIFIED_BY['.$i.']', __('MODIFIED BY'))->default($user->id);
         }
+
+
+        //$form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
+
             
         if ($user) {
             $form->hidden('INSERTED_BY['.$i.']', __('INSERTED BY'))->default($user->id);
