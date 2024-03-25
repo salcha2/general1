@@ -131,10 +131,11 @@ class PendingController extends AdminController
             '9' => 'Panel 1 Cartuja',
             '10' => 'Panel 2 Cartuja',
             '11' => 'Pending',
-        ])->when('3', function (Form $form) {
+        ])->when('3', function (Form $form)  {
             // Obtener el modelo General usando el ID de la URL
             $id = request()->segment(3);
             $general = General::findOrFail($id);
+            
     
             // Obtener la cantidad del modelo General
             $quantity = $general->QUANTITY ?? 1;
@@ -215,6 +216,7 @@ class PendingController extends AdminController
             }
     
             $form->saving(function (Form $form) use ($quantity) {
+
                 // Guardar múltiples registros dependiendo de la cantidad especificada
                 for ($i = 0; $i < $quantity; $i++) {
                     // Crear una nueva instancia de General para cada iteración
@@ -255,6 +257,10 @@ class PendingController extends AdminController
         return $form;
     }
     
+
+    
+    
+
 
 
 }

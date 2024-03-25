@@ -112,6 +112,7 @@ class GeneralController extends AdminController
         }
     });
     
+    $grid->model()->whereNotIn('STATE_ID', [8, 1])->with('device');
 
 
 
@@ -205,7 +206,7 @@ $grid->filter(function($filter) {
             '9' => 'Other',
             '10' => 'Wire',
             '36' => 'QED',
-        ])->when('1', function (Form $form) {
+        ])->rules('required')->when('1', function (Form $form) {
             // Define los campos específicos del medidor (Meter)
             $form->text('profile.ACA', __('ADCE'))->help('Enter ADCE value here');
             $form->select('profile.DEVICE_FAMILY_ID', __('Device family'))->options(DeviceType::pluck('FAMILY_SM', 'ID'))->help('Select device family');
@@ -253,9 +254,9 @@ $grid->filter(function($filter) {
 
         $form->text('NAME', __('Name'));
 
-        $form->text('SERIAL_NUMBER', __('Serial number'));
-        $form->date('RECEPTION_DATE', __('Reception date'));
-        $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'));
+        $form->text('SERIAL_NUMBER', __('Serial number'))->rules('required|min:3');
+        $form->date('RECEPTION_DATE', __('Reception date'))->rules('required|min:3');
+        $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'))->rules('required');
 
         // Sección de perfil
     // $form->fieldset('Profile', function ($form) {
@@ -274,7 +275,7 @@ $grid->filter(function($filter) {
     
 
 
-        $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'));         
+        $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
         //$form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
         $form->select('STATE_ID', __('State'))->options([
             '1' => 'Installed',
@@ -286,7 +287,7 @@ $grid->filter(function($filter) {
             '10' => 'Panel 2 Cartuja',
             '11' => 'Pending',
             
-        ])->when('11', function (Form $form) {
+        ])->rules('required')->when('11', function (Form $form) {
             $form->text('QUANTITY', __('Quantity'));
         });
         $form->text('LOCATION', __('Location'));
