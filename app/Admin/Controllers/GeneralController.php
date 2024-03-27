@@ -17,6 +17,7 @@ use App\Models\GeneralView;
 use App\Models\SmartMeter;
 use App\Models\Concentrator;
 use App\Models\Company;
+use App\Models\Protocol;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -114,7 +115,7 @@ class GeneralController extends AdminController
         }
     });
     
-    $grid->model()->whereNotIn('STATE_ID', [8, 1])->with('device');
+    //$grid->model()->whereNotIn('STATE_ID', [8, 1])->with('device');
 
 
 
@@ -132,14 +133,14 @@ class GeneralController extends AdminController
 
     $grid->column('NAME', __('Name'));
     $grid->column('SERIAL_NUMBER', __('Serial number'));
-    $grid->column('RECEPTION_DATE', __('Reception date'));
+    $grid->column('RECEPTION_DATE', __('Reception date'))->sortable();
     $grid->column('LOCATION', __('Location'));
     //$grid->column('QUANTITY', __('Quantity'));
     $grid->column('NOTES', __('Notes'));
-    $grid->column('created_at', __('Insertion date'))->display(function ($createdAt) {
+    $grid->column('created_at', __('Insertion date'))->sortable()->display(function ($createdAt) {
         return (new \DateTime($createdAt))->format('Y-m-d H:i:s');
     });
-    $grid->column('updated_at', __('Modification date'))->display(function ($updated_at) {
+    $grid->column('updated_at', __('Modification date'))->sortable()->display(function ($updated_at) {
         return (new \DateTime($updated_at))->format('Y-m-d H:i:s');
     });
     
@@ -165,7 +166,15 @@ $grid->filter(function($filter) {
           ->orWhere('NAME', 'like', "%{$this->input}%")
           ->orWhere('LOCATION', 'like', "%{$this->input}%")
           ->orWhere('VERSION', 'like', "%{$this->input}%");
+
     }, 'Search ');
+
+
+    $filter->equal('STATE_ID', __('State'))->select(function () {
+        return Status::pluck('STATE', 'ID')->prepend(__('Select State'), '');
+    });    
+
+
 
 
 
@@ -180,7 +189,7 @@ $grid->filter(function($filter) {
 //$grid->expandFilter();
 
     
-    $grid->model()->whereNotIn('STATE_ID', [11]);
+    //$grid->model()->whereNotIn('STATE_ID', [11]);
        
 
     return $grid;
@@ -226,7 +235,7 @@ $grid->filter(function($filter) {
             $form->select('smart.DEVICE_FAMILY_ID', __('Device family'))->options(DeviceType::pluck('FAMILY_LVC', 'ID'));
             $form->text('smart.PPP_USERNAME', __('PPP username'));
             $form->text('smart.PPP_PWD', __('PPP pass'));
-            $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME'));
+            $form->text('smart.LVC_MAA_USERNAME', __('LVC MAA USERNAME')); 
             $form->text('smart.LVC_MAA_PWD', __('LVC MAA PWD'));
             $form->text('smart.ETH_RIGHT', __('ETH RIGHT'));
             $form->text('smart.MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
@@ -271,6 +280,10 @@ $grid->filter(function($filter) {
         $form->date('RECEPTION_DATE', __('Reception date'))->rules('required|min:3');
         $form->select('ORIGIN', __('Origin'))->options(Entity::pluck('ENTITY', 'ID'))->rules('required');
 
+        $form->select('APPLICATION_PROTOCOL_ID', __('Application protocol'))->options(Protocol::pluck('APPLICATION_PROTOCOL', 'ID'));
+
+        $form->select('PHYSICAL_PROTOCOL_ID', __('Physical protocol'))->options(Protocol::pluck('PHYSICAL_PROTOCOL', 'ID'));
+
         // Sección de perfil
     // $form->fieldset('Profile', function ($form) {
     //     $form->text('profile.ACA')->help('Enter ACA value here');
@@ -288,7 +301,13 @@ $grid->filter(function($filter) {
     
 
 
-        $form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
+        //$form->select('RECIPIENT', __('Receiver'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');   
+        $form->select('RECIPIENT', __('RECEIVER'))->options([
+            '4' => 'Jesus Muros',
+            
+         
+
+        ]);      
         //$form->select('STATE_ID', __('State'))->options(Status::pluck('STATE', 'ID'));
         $form->select('STATE_ID', __('State'))->options([
             '1' => 'Installed',
@@ -315,8 +334,10 @@ $grid->filter(function($filter) {
         // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
 
         $form->select('MODIFIED_BY', __('MODIFIED BY'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
-        $form->select('INSERTED_BY', __('INSERTED BY'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
-
+        //$form->select('INSERTED_BY', __('INSERTED BY'))->options(AdminUser::pluck('NAME', 'id'))->rules('required');         
+        if ($user) {
+            $form->hidden('INSERTED_BY', __('INSERTED BY'))->default($user->id);
+        }         
 
 
         // if ($user) {
@@ -354,14 +375,28 @@ $grid->filter(function($filter) {
         $show->field('NAME', __('Name'));
         $show->field('SERIAL_NUMBER', __('Serial Number'));
         $show->field('RECEPTION_DATE', __('Reception Date'));
-        $show->field('entity', __('Origin'));
+        $show->field('originEntity.ENTITY', __('Origin'));
         $show->field('LOCATION', __('Location'));
-        $show->field('company', __('Owner'));
+        //$show->field('company', __('Owner'));
         //$show->field('QUANTITY', __('Quantity'));
         $show->field('NOTES', __('Notes'));
         $show->field('recipientAdminUser.name', __('Receiver'));
         $show->field('insertedByAdminUser.name', __('Inserted by'));
         $show->field('modifiedByAdminUser.name', __('Modified by'));
+        
+        $show->field('device.DEVICE_TYPE', __('Device type'));
+        
+        $show->field('ownerEntity.COMPANY', __('Owner'));
+
+        //$show->field('profile.KW_CE', __('KW_CE'));
+
+
+       
+        
+
+
+
+
 
 
         //$general = General::with('device')->find($deviceId);

@@ -49,6 +49,19 @@ class General extends Model
         return $this->belongsTo(DeviceType::class, 'DEVICE_ID');
     }
 
+
+    public function protocol()
+    {
+        return $this->belongsTo(Protocol::class, 'APPLICATION_PROTOCOL_ID');
+    }
+
+
+
+    public function protocol1()
+    {
+        return $this->belongsTo(Protocol::class, 'PHYSICAL_PROTOCOL_ID');
+    }
+
   
 
     

@@ -5,7 +5,7 @@ namespace App\Admin\Controllers;
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
-use App\Models\Pending;
+//use App\Models\Pending;
 use App\Models\DeviceType;
 use App\Models\Entity;
 use App\Models\General;
@@ -100,14 +100,12 @@ class PendingController extends AdminController
      */
     protected function detail($id)
     {
-        $show = new Show(Pending::findOrFail($id));
+        $show = new Show(General::findOrFail($id));
 
         $show->field('ID', __('ID'));
-        $show->field('ENTITY_ID', __('Entity ID'));
-        $show->field('TYPE', __('Type'));
         $show->field('QUANTITY', __('Quantity'));
         $show->field('DETAILS', __('Details'));
-        $show->field('DSO', __('DSO'));
+        $show->field('ORIGIN', __('DSO'));
 
         return $show;
     }
@@ -192,6 +190,22 @@ class PendingController extends AdminController
 
                     ]);
 
+                    $form->select('APPLICATION_PROTOCOL_ID['.$i.']', __('Application protocol'))->options([
+                        '1' => 'M&M',
+                        '2' => 'DLMS',
+                        
+                     
+
+                    ]);
+
+                    $form->select('PHYSICAL_PROTOCOL_ID['.$i.']', __('Physical protocol'))->options([
+                        '1' => 'M&M',
+                        '2' => 'G3 Hybrid',
+                        
+                     
+
+                    ]);
+
                     $user = Auth::user();
 
         // Si el usuario está autenticado, establece automáticamente el usuario en el campo MODIFIED_BY
@@ -207,13 +221,22 @@ class PendingController extends AdminController
             $form->hidden('INSERTED_BY['.$i.']', __('INSERTED BY'))->default($user->id);
         } 
 
-        if ($user) {
-            $form->text('RECIPIENT['.$i.']', __('RECEIVER'))->default($user->id);
-        } 
+        // if ($user) {
+        //     $defaultUserId = 4; // ID del usuario por defecto
+        //     $form->text('RECIPIENT['.$i.']', __('RECEIVER'))->default($defaultUserId)->attributes(['style' => 'display:none;']);
+        // }
+
+        $form->select('RECIPIENT['.$i.']', __('RECEIVER'))->options([
+            '4' => 'Jesus Muros',
+            
+         
+
+        ]);
+        
                     //$form->text('INSERTED_BY['.$i.']', __('Inserted By'));
                     //$form->text('MODIFIED_BY['.$i.']', __('Modified By'));
                     $form->text('VERSION['.$i.']', __('Version'));
-                    $form->text('VISIBLE['.$i.']', __('Visible'));
+                    //$form->text('VISIBLE['.$i.']', __('Visible'));
                     $form->text('url['.$i.']', __('URL'));
                 });
             }

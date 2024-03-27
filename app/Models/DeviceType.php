@@ -29,6 +29,8 @@ class DeviceType extends Model
         return $this->hasOne(DeviceType::class, 'DEVICE_TYPE_ID');
     }
 
+    
+
 }
 
 

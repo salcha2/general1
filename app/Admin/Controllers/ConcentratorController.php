@@ -12,6 +12,7 @@ use App\Models\Entity;
 use App\Models\Status;
 use App\Models\AdminUser;
 use App\Models\Company;
+use App\Models\Protocol;
 
 
 class ConcentratorController extends AdminController
@@ -33,9 +34,12 @@ class ConcentratorController extends AdminController
         $grid = new Grid(new Concentrator());
 
         $grid->column('ID', __('ID'));
-        $grid->column('GENERAL_ID', __('GENERAL ID'));
-        $grid->column('general.NAME', __('General Name'));
+        //$grid->column('GENERAL_ID', __('GENERAL ID'));
+        $grid->column('general.NAME', __('Name'));
         $grid->column('general.VERSION', __('VERSION')); 
+        $grid->column('general.SERIAL_NUMBER', __('Serial Number')); // Accede al atributo 'name' de la tabla 'General'
+        $grid->column('general.RECEPTION_DATE', __('Reception date')); // Accede al atributo 'name' de la tabla 'General'
+        
         //$grid->column('general.OWNER', __('OWNER')); 
 
         $grid->column('general.OWNER', __('OWNER'))->display(function ($stateId) {
@@ -46,6 +50,34 @@ class ConcentratorController extends AdminController
             if ($status) {
                 // Si se encontró, devuelve el estado
                 return $status->COMPANY;
+            } else {
+                // Si no se encontró, devuelve un mensaje indicando que no se encontró el estado
+                return 'No State Found';
+            }
+        });
+
+        $grid->column('general.APPLICATION_PROTOCOL_ID', __('Application protocol'))->display(function ($stateId) {
+            // Busca el estado en la tabla Status usando el STATE_ID
+            $status = Protocol::find($stateId);
+            
+            // Verifica si se encontró un estado con el STATE_ID dado
+            if ($status) {
+                // Si se encontró, devuelve el estado
+                return $status->APPLICATION_PROTOCOL;
+            } else {
+                // Si no se encontró, devuelve un mensaje indicando que no se encontró el estado
+                return 'No State Found';
+            }
+        });
+
+        $grid->column('general.PHYSICAL_PROTOCOL_ID', __('Physical protocol'))->display(function ($stateId) {
+            // Busca el estado en la tabla Status usando el STATE_ID
+            $status = Protocol::find($stateId);
+            
+            // Verifica si se encontró un estado con el STATE_ID dado
+            if ($status) {
+                // Si se encontró, devuelve el estado
+                return $status->PHYSICAL_PROTOCOL;
             } else {
                 // Si no se encontró, devuelve un mensaje indicando que no se encontró el estado
                 return 'No State Found';
@@ -83,33 +115,9 @@ class ConcentratorController extends AdminController
             }
         }); 
 
-        $grid->column('general.DEVICE_ID', __('APPLICATION_PROTOCOL'))->display(function ($deviceId) {
-            // Busca el dispositivo en la tabla DeviceType usando el ID
-            $deviceType = DeviceType::find($deviceId);
         
-            // Verifica si se encontró un dispositivo con el ID dado
-            if ($deviceType) {
-                // Si se encontró, devuelve el DEVICE_TYPE
-                return $deviceType->APPLICATION_PROTOCOL;
-            } else {
-                // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
-                return 'No Device Type';
-            }
-        });
 
-        $grid->column('TYPOLOGY_ID', __('PHYSICAL_PROTOCOL'))->display(function ($deviceId) {
-            // Busca el dispositivo en la tabla DeviceType usando el ID
-            $deviceType = DeviceType::find($deviceId);
         
-            // Verifica si se encontró un dispositivo con el ID dado
-            if ($deviceType) {
-                // Si se encontró, devuelve el DEVICE_TYPE
-                return $deviceType->PHYSICAL_PROTOCOL;
-            } else {
-                // Si no se encontró, devuelve un mensaje indicando que no hay tipo de dispositivo
-                return 'No Device Type';
-            }
-        });
 
 
         $grid->column('DEVICE_FAMILY_ID', __('DECICE FAMILY'))->display(function ($deviceId) {
@@ -136,10 +144,10 @@ class ConcentratorController extends AdminController
         $grid->column('MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
         $grid->column('ETH_LEFT', __('ETH LEFT'));
         $grid->column('MAC_ETH_LEFT', __('MAC ETH LEFT'));
-        $grid->column('SERIAL_NUMBER', __('SERIAL NUMBER'));
 
         $grid->column('general.url', __('SHAREPOINT URL'));
 
+        
         $grid->filter(function ($filter) {
             $filter->disableIdFilter(); // Deshabilita el filtro para el campo de ID
             // Filtrar por nombre
@@ -148,35 +156,25 @@ class ConcentratorController extends AdminController
             $filter->like('general.SERIAL_NUMBER', __('Serial Number'))->placeholder(__('Search Serial Number'));
             // Filtrar por fecha de recepción
             // Filtrar por origen
-            $filter->equal('general.ORIGIN', __('Origin'))->select(function () {
-                // Obtener las entidades y filtrar las que no tienen valores numéricos en el campo COMPANY
-                $entities = Entity::get()->filter(function ($entity) {
-                    return !is_numeric($entity->COMPANY);
-                })->pluck('general.COMPANY', 'ID')->prepend(__('Select Origin'), '');
+            // $filter->equal('general.ORIGIN', __('Origin'))->select(function () {
+            //     // Obtener las entidades y filtrar las que no tienen valores numéricos en el campo COMPANY
+            //     $entities = Entity::get()->filter(function ($entity) {
+            //         return !is_numeric($entity->COMPANY);
+            //     })->pluck('general.COMPANY', 'ID')->prepend(__('Select Origin'), '');
                 
-                return $entities;
-            });
-            // Filtrar por receptor
-            $filter->equal('general.RECIPIENT', __('Recipient'))->select(function () {
-                return AdminUser::pluck('name', 'id')->prepend(__('Select Recipient'), '');
-            });
+            //     return $entities;
+            // });
+            
             // Filtrar por estado
-            $filter->equal('general.STATE_ID', __('State'))->select(function () {
-                return Status::pluck('STATE', 'ID')->prepend(__('Select State'), '');
-            });
+            
             // Filtrar por ubicación
-            $filter->like('general.LOCATION', __('Location'))->placeholder(__('Search Location'));
+            //$filter->like('general.LOCATION', __('Location'))->placeholder(__('Search Location'));
             // Filtrar por propietario
-            $filter->equal('general.OWNER', __('Owner'))->select(function () {
-                return Entity::pluck('ENTITY', 'ID')->prepend(__('Select Owner'), '');
-            });
+            
             // Filtrar por notas
-            $filter->like('general.NOTES', __('Notes'))->placeholder(__('Search Notes'));
+            //$filter->like('general.NOTES', __('Notes'))->placeholder(__('Search Notes'));
             // Filtrar por fecha de inserción
-            // Filtrar por usuario que insertó
-            $filter->equal('general.INSERTED_BY', __('Inserted By'))->select(function () {
-                return AdminUser::pluck('name', 'id')->prepend(__('Select Inserted By'), '');
-            });
+           
             // Filtrar por fecha de modificación
             // Filtrar por usuario que modificó
             $filter->equal('general.MODIFIED_BY', __('Modified By'))->select(function () {
@@ -221,6 +219,14 @@ class ConcentratorController extends AdminController
         $show->field('ETH_LEFT', __('ETH LEFT'));
         $show->field('MAC_ETH_LEFT', __('MAC ETH LEFT'));
 
+        $show->field('general.NAME', __('NAME'));
+        $show->field('general.SERIAL_NUMBER', __('Serial number'));
+        $show->field('general.RECEPTION_DATE', __('Reception date'));
+        $show->field('general.LOCATION', __('Location'));
+        $show->field('general.updated_at', __('Updated at'));
+        $show->field('deviceFamily.DEVICE_TYPE', __('Device type'));
+
+
         return $show;
     }
 
@@ -244,8 +250,6 @@ class ConcentratorController extends AdminController
         $form->text('MAC_ETH_RIGHT', __('MAC ETH RIGHT'));
         $form->text('ETH_LEFT', __('ETH LEFT'));
         $form->text('MAC_ETH_LEFT', __('MAC ETH LEFT'));
-        $form->text('SERIAL_NUMBER', __('SERIAL NUMBER'));
-        $form->number('TYPOLOGY_ID', __('TYPOLOGY ID'))->options(Concentrator::pluck('ID', 'id'));
 
         return $form;
     }

@@ -54,6 +54,8 @@ class SmartMeter extends Model
         return $this->belongsTo(DeviceType::class, 'TYPOLOGY_ID');
     }
 
+    
+
 
     public function user()
     {
